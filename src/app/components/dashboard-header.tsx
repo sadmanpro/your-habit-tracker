@@ -5,9 +5,8 @@ import MonthlyProgressChart from './monthly-progress-chart';
 import WeeklyProgressChart from './weekly-progress-chart';
 import { getFormattedDate } from '@/lib/date-utils';
 import { useState, useEffect } from 'react';
-import { Calendar, Quote } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { dailyQuotes } from '@/lib/quotes';
 
 type DashboardHeaderProps = {
   habits: Habit[];
@@ -16,14 +15,9 @@ type DashboardHeaderProps = {
 
 export default function DashboardHeader({ habits, currentDate }: DashboardHeaderProps) {
   const [formattedDate, setFormattedDate] = useState('');
-  const [quote, setQuote] = useState('');
 
   useEffect(() => {
     setFormattedDate(getFormattedDate(currentDate));
-    // Use the day of the month to get a quote.
-    const dayIndex = currentDate.getDate() - 1;
-    // Use modulo to loop through quotes if we have more days than quotes
-    setQuote(dailyQuotes[dayIndex % dailyQuotes.length]);
   }, [currentDate]);
 
   return (
@@ -50,11 +44,6 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
               <MonthlyProgressChart habits={habits} currentDate={currentDate} />
             </div>
           </div>
-        </div>
-        <Separator className="my-4" />
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <Quote className="h-5 w-5 shrink-0" />
-          <p className="italic text-sm sm:text-base">"{quote}"</p>
         </div>
       </CardContent>
     </Card>

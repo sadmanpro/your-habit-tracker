@@ -7,6 +7,7 @@ import TrendAnalysisChart from './trend-analysis-chart';
 import HabitGrid from './habit-grid';
 import AddEditHabitDialog from './add-edit-habit-dialog';
 import AuthDialog from './auth-dialog';
+import DailyQuote from './daily-quote';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from './theme-toggle';
@@ -230,6 +231,7 @@ export default function HabitTracker() {
           onDeleteHabit={handleDeleteHabit}
           onAddHabit={handleOpenAddDialog} 
         />
+        <DailyQuote currentDate={currentDate} />
       </div>
        <AddEditHabitDialog
         isOpen={isAddEditDialogOpen}
