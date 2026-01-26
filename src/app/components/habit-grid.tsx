@@ -22,7 +22,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
   return (
     <Card className="w-full overflow-hidden shadow-lg">
         <div className="overflow-x-auto">
-            <table className="min-w-full border-collapse text-sm">
+            <table className="min-w-full border-separate border-spacing-0 text-sm">
             <thead className="text-muted-foreground">
                 <tr className="border-b">
                     <th className={`${headerStickyClass} ${firstColStickyClass} p-3 font-semibold text-left text-foreground w-48`}>
@@ -72,7 +72,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
 
                     return (
                         <tr key={habit.id} className="border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                            <td className="sticky left-0 bg-inherit z-30 p-3 font-medium text-foreground whitespace-nowrap w-48">{habit.name}</td>
+                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground whitespace-nowrap w-48">{habit.name}</td>
                             {weeks.flatMap(week =>
                                 week.map(day => {
                                     const dayKey = formatDateKey(day);
@@ -88,13 +88,13 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
                                     );
                                 })
                             )}
-                            <td className="sticky right-[12rem] bg-inherit p-3 text-center border-l w-28 font-medium">
+                            <td className="sticky right-[12rem] bg-card p-3 text-center border-l w-28 font-medium">
                                 {completedCount}/{totalDaysInMonth}
                             </td>
-                            <td className="sticky right-[5rem] bg-inherit p-3 text-center border-l w-28">
+                            <td className="sticky right-[5rem] bg-card p-3 text-center border-l w-28">
                                 <Progress value={completionPercentage} className="h-3 w-full bg-muted [&>div]:bg-accent" />
                             </td>
-                            <td className="sticky right-0 bg-inherit p-3 text-center font-bold text-accent border-l w-20">
+                            <td className="sticky right-0 bg-card p-3 text-center font-bold text-accent border-l w-20">
                                 {Math.round(completionPercentage)}%
                             </td>
                         </tr>
