@@ -31,10 +31,21 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
     };
   });
 
+  const totalCompletionRate = chartData.reduce((sum, day) => sum + day.completionRate, 0);
+  const averageCompletionRate = chartData.length > 0 ? totalCompletionRate / chartData.length : 0;
+
+  const getProgressColor = () => {
+    if (averageCompletionRate < 40) return 'hsl(var(--destructive))';
+    if (averageCompletionRate < 75) return 'hsl(var(--chart-4))';
+    return 'hsl(var(--primary))';
+  }
+
+  const progressColor = getProgressColor();
+
   const chartConfig: ChartConfig = {
     completionRate: {
       label: 'Daily Completion',
-      color: 'hsl(var(--primary))',
+      color: progressColor,
     },
   };
 
@@ -69,15 +80,15 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
           <ChartTooltip cursor={true} content={<ChartTooltipContent indicator="dot" />} />
           <defs>
             <linearGradient id="fillGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.1} />
+              <stop offset="5%" stopColor={progressColor} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={progressColor} stopOpacity={0.1} />
             </linearGradient>
           </defs>
           <Area
             dataKey="completionRate"
             type="monotone"
             fill="url(#fillGradient)"
-            stroke="hsl(var(--primary))"
+            stroke={progressColor}
             strokeWidth={2}
             dot={false}
           />

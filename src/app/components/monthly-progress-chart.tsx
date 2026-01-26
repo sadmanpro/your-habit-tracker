@@ -30,8 +30,16 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
   
   const completionPercentage = totalPossibleCompletions > 0 ? (totalCompleted / totalPossibleCompletions) * 100 : 0;
 
+  const getProgressColor = () => {
+    if (completionPercentage < 40) return 'hsl(var(--destructive))';
+    if (completionPercentage < 75) return 'hsl(var(--chart-4))';
+    return 'hsl(var(--accent))';
+  }
+
+  const progressColor = getProgressColor();
+
   const chartData = [
-    { name: 'Completed', value: completionPercentage, fill: 'hsl(var(--accent))' },
+    { name: 'Completed', value: completionPercentage, fill: progressColor },
     { name: 'Remaining', value: 100 - completionPercentage, fill: 'hsl(var(--muted))' },
   ];
 
@@ -61,7 +69,7 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
         </PieChart>
       </ChartContainer>
        <div className="absolute flex items-center justify-center inset-0">
-        <span className="text-lg font-bold text-accent">{Math.round(completionPercentage)}%</span>
+        <span className="text-lg font-bold" style={{ color: progressColor }}>{Math.round(completionPercentage)}%</span>
       </div>
     </div>
   );
