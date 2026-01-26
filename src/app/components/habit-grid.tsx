@@ -90,7 +90,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                           week.map(day => (
                               <th key={formatDateKey(day)} className={cn("p-2 font-normal text-center border-l w-10 sm:w-14", getDayColumnStyle(day))}>
                                   <div className={`text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
-                                  <div className={`text-sm sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
+                                  <div className={`text-xs sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
                               </th>
                           ))
                       )}

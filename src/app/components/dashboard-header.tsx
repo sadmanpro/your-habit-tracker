@@ -25,7 +25,7 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
           <Calendar className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground" />
           <div>
             <p className="text-xs sm:text-sm text-muted-foreground">Today</p>
-            <p className="text-base sm:text-xl font-bold text-primary">{formattedDate}</p>
+            <p className="text-sm sm:text-xl font-bold text-primary">{formattedDate}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 sm:gap-4">

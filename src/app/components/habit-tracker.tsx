@@ -122,7 +122,7 @@ export default function HabitTracker() {
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="flex flex-wrap gap-4 justify-between items-center">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">YOUR HABIT TRACKER</h1>
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">YOUR HABIT TRACKER</h1>
             <p className="text-muted-foreground">Cultivate consistency, one day at a time.</p>
           </div>
           <Button onClick={handleOpenAddDialog} size="sm" className="sm:size-auto">
