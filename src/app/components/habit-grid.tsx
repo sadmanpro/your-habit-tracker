@@ -22,6 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 type HabitGridProps = {
   habits: Habit[];
@@ -38,6 +39,28 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
   });
   const weeks = getWeeksInMonth(currentDate);
 
+  const getDayColumnStyle = (day: Date) => {
+    if (!habits || habits.length === 0) {
+        return isToday(day) ? 'bg-primary/10' : '';
+    }
+
+    const dayKey = formatDateKey(day);
+    const completedCount = habits.filter(h => h.completions[dayKey]).length;
+    const completionRate = completedCount / habits.length;
+
+    if (completionRate === 1) { // 100% completed
+        return 'bg-accent/20'; // green
+    }
+    if (completionRate >= 0.75) { // 75%
+        return 'bg-chart-4/20';
+    }
+    if (completionRate >= 0.5) { // 50%
+        return 'bg-destructive/20';
+    }
+
+    return isToday(day) ? 'bg-primary/10' : '';
+  };
+
   const handleDelete = () => {
     if (deleteAlert.habitId) {
       onDeleteHabit(deleteAlert.habitId);
@@ -52,7 +75,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <table className="min-w-full text-xs sm:text-sm border-collapse">
               <thead className="text-muted-foreground sticky top-0 z-20 bg-card">
                   <tr className="border-b">
-                      <th className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-40 md:w-48 whitespace-nowrap border-r">
+                      <th className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-semibold text-left text-foreground w-24 sm:w-32 md:w-48 whitespace-nowrap border-r">
                           Habit
                       </th>
                       {weeks.map((week, index) => (
@@ -65,7 +88,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       <th className="sticky left-0 bg-card z-30 border-r"></th>
                       {weeks.flatMap(week =>
                           week.map(day => (
-                              <th key={formatDateKey(day)} className={`p-2 font-normal text-center border-l w-10 sm:w-14 ${isToday(day) ? 'bg-primary/10' : ''}`}>
+                              <th key={formatDateKey(day)} className={cn("p-2 font-normal text-center border-l w-10 sm:w-14", getDayColumnStyle(day))}>
                                   <div className={`text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
                                   <div className={`text-sm sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
                               </th>
@@ -76,7 +99,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <tbody>
                   {habits.map((habit) => (
                       <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                          <td className="sticky left-0 bg-card z-10 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-32 md:w-48 border-r">
+                          <td className="sticky left-0 bg-card z-10 p-2 sm:p-3 font-medium text-foreground w-24 sm:w-32 md:w-48 border-r">
                                <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                       <div className="flex items-center justify-between gap-2 cursor-pointer w-full">
@@ -101,7 +124,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                               week.map(day => {
                                   const dayKey = formatDateKey(day);
                                   return (
-                                  <td key={dayKey} className={`p-2 text-center border-l ${isToday(day) ? 'bg-primary/10' : ''}`}>
+                                  <td key={dayKey} className={cn("p-2 text-center border-l", getDayColumnStyle(day))}>
                                       <Checkbox
                                           checked={!!habit.completions[dayKey]}
                                           onCheckedChange={(checked) => onHabitChange(habit.id, dayKey, !!checked)}
