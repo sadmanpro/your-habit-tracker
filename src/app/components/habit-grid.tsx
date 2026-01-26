@@ -72,7 +72,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
 
                     return (
                         <tr key={habit.id} className="border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                            <td className={`${firstColStickyClass} p-3 font-medium text-foreground whitespace-nowrap w-48`}>{habit.name}</td>
+                            <td className="sticky left-0 bg-inherit z-30 p-3 font-medium text-foreground whitespace-nowrap w-48">{habit.name}</td>
                             {weeks.flatMap(week =>
                                 week.map(day => {
                                     const dayKey = formatDateKey(day);
