@@ -4,7 +4,6 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
   ChartConfig,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
@@ -24,10 +23,13 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
     const completedOnDay = habits.reduce((acc, habit) => {
       return acc + (habit.completions[dayKey] ? 1 : 0);
     }, 0);
-    const completionRate = habits.length > 0 ? (completedOnDay / habits.length) * 100 : 0;
+    const totalTasks = habits.length;
+    const completionRate = totalTasks > 0 ? (completedOnDay / totalTasks) * 100 : 0;
     return {
       date: format(day, 'MMM d'),
       completionRate: Math.round(completionRate),
+      completed: completedOnDay,
+      total: totalTasks,
     };
   });
 
@@ -50,6 +52,21 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
     },
   };
 
+  const CustomTooltipContent = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="rounded-lg border bg-popover p-2.5 text-sm text-popover-foreground shadow-sm">
+          <div className="font-medium mb-1">{label}</div>
+          <div className="text-muted-foreground">
+            {data.completed} of {data.total} habits completed
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="h-48 w-full">
       <ChartContainer config={chartConfig} className="h-full w-full">
@@ -58,7 +75,7 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
           margin={{
             top: 5,
             right: 10,
-            left: -20,
+            left: 0,
             bottom: 0,
           }}
         >
@@ -78,7 +95,10 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
             domain={[0, 100]}
             fontSize={12}
           />
-          <ChartTooltip cursor={true} content={<ChartTooltipContent indicator="dot" />} />
+          <ChartTooltip
+            cursor={true}
+            content={<CustomTooltipContent />}
+          />
           <defs>
             <linearGradient id="fillGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor={progressColor} stopOpacity={0.8} />
