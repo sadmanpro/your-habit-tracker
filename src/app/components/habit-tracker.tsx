@@ -250,8 +250,7 @@ export default function HabitTracker() {
         </div>
         
         <div
-          className="animate-in fade-in slide-in-from-top-4 duration-500"
-          style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}
+          className="animate-float"
         >
           <DailyQuote currentDate={currentDate} />
         </div>
