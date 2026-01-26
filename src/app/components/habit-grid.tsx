@@ -52,17 +52,17 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                 {habits.map((habit) => {
                     return (
                         <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                            <td className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-40 md:w-48">
+                            <td className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-32 md:w-48">
                                 <div className="flex items-center justify-between gap-2">
-                                    <span className="flex-grow break-words">{habit.name}</span>
+                                    <span className="flex-grow break-words text-xs sm:text-sm">{habit.name}</span>
                                     <div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                                        <Button variant="ghost" className="h-6 w-6 p-0.5" onClick={() => onEditHabit(habit)}>
+                                        <Button variant="ghost" className="h-5 w-5 p-0.5" onClick={() => onEditHabit(habit)}>
                                             <span className="sr-only">Edit habit</span>
-                                            <Edit className="h-3.5 w-3.5" />
+                                            <Edit className="h-3 w-3" />
                                         </Button>
-                                        <Button variant="ghost" className="h-6 w-6 p-0.5 text-destructive hover:text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => onDeleteHabit(habit.id)}>
+                                        <Button variant="ghost" className="h-5 w-5 p-0.5 text-destructive hover:text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => onDeleteHabit(habit.id)}>
                                             <span className="sr-only">Delete habit</span>
-                                            <Trash2 className="h-3.5 w-3.5" />
+                                            <Trash2 className="h-3 w-3" />
                                         </Button>
                                     </div>
                                 </div>
