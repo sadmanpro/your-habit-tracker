@@ -7,6 +7,7 @@ import DashboardHeader from './dashboard-header';
 import TrendAnalysisChart from './trend-analysis-chart';
 import HabitGrid from './habit-grid';
 import AddEditHabitDialog from './add-edit-habit-dialog';
+import AuthDialog from './auth-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from './theme-toggle';
@@ -19,8 +20,9 @@ export default function HabitTracker() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
   const [habitToEdit, setHabitToEdit] = useState<Habit | null>(null);
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -65,12 +67,12 @@ export default function HabitTracker() {
   
   const handleOpenAddDialog = () => {
     setHabitToEdit(null);
-    setIsDialogOpen(true);
+    setIsAddEditDialogOpen(true);
   };
 
   const handleOpenEditDialog = (habit: Habit) => {
     setHabitToEdit(habit);
-    setIsDialogOpen(true);
+    setIsAddEditDialogOpen(true);
   };
 
   const handleDeleteHabit = (habitId: string) => {
@@ -129,7 +131,7 @@ export default function HabitTracker() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={() => setIsAuthDialogOpen(true)}>
                 <User className="h-6 w-6" />
                 <span className="sr-only">Open profile</span>
               </Button>
@@ -160,11 +162,12 @@ export default function HabitTracker() {
         />
       </div>
        <AddEditHabitDialog
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
+        isOpen={isAddEditDialogOpen}
+        onClose={() => setIsAddEditDialogOpen(false)}
         onSave={handleSaveHabit}
         habitToEdit={habitToEdit}
       />
+      <AuthDialog isOpen={isAuthDialogOpen} onClose={() => setIsAuthDialogOpen(false)} />
     </div>
   );
 }
