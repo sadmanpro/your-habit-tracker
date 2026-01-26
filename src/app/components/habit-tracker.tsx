@@ -28,6 +28,7 @@ import {
 } from '@/firebase';
 import { collection, doc, getDoc, setDoc, query, orderBy } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+import Footer from './footer';
 
 const defaultHabits: Habit[] = [
   {
@@ -232,6 +233,7 @@ export default function HabitTracker() {
           onAddHabit={handleOpenAddDialog} 
         />
         <DailyQuote currentDate={currentDate} />
+        <Footer />
       </div>
        <AddEditHabitDialog
         isOpen={isAddEditDialogOpen}
