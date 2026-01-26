@@ -35,9 +35,10 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
   const averageCompletionRate = chartData.length > 0 ? totalCompletionRate / chartData.length : 0;
 
   const getProgressColor = () => {
-    if (averageCompletionRate < 40) return 'hsl(var(--destructive))';
-    if (averageCompletionRate < 75) return 'hsl(var(--chart-4))';
-    return 'hsl(var(--primary))';
+    if (averageCompletionRate === 100) return 'hsl(var(--accent))'; // green
+    if (averageCompletionRate >= 75) return 'hsl(var(--chart-4))'; // yellow
+    if (averageCompletionRate >= 50) return 'hsl(var(--destructive))'; // red
+    return 'hsl(var(--destructive))'; // Also red for < 50%
   }
 
   const progressColor = getProgressColor();

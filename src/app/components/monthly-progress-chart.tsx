@@ -31,9 +31,10 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
   const completionPercentage = totalPossibleCompletions > 0 ? (totalCompleted / totalPossibleCompletions) * 100 : 0;
 
   const getProgressColor = () => {
-    if (completionPercentage < 40) return 'hsl(var(--destructive))';
-    if (completionPercentage < 75) return 'hsl(var(--chart-4))';
-    return 'hsl(var(--accent))';
+    if (completionPercentage === 100) return 'hsl(var(--accent))'; // green
+    if (completionPercentage >= 75) return 'hsl(var(--chart-4))'; // yellow
+    if (completionPercentage >= 50) return 'hsl(var(--destructive))'; // red
+    return 'hsl(var(--destructive))'; // Also red for < 50%
   }
 
   const progressColor = getProgressColor();
