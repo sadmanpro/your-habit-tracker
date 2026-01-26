@@ -1,4 +1,3 @@
-
 'use client';
 import type { Habit } from '@/lib/habits-data';
 import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
@@ -25,10 +24,10 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
   return (
     <Card className="w-full overflow-hidden shadow-lg">
         <div className="overflow-x-auto relative">
-            <table className="min-w-full text-sm border-collapse">
+            <table className="min-w-full text-xs sm:text-sm border-collapse">
             <thead className="text-muted-foreground">
                 <tr className="border-b">
-                    <th className={`${firstColStickyClass} p-3 font-semibold text-left text-foreground w-24 sm:w-40 md:w-48 whitespace-nowrap`}>
+                    <th className={`${firstColStickyClass} p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-40 md:w-48 whitespace-nowrap`}>
                         Habit
                     </th>
                     {weeks.map((week, index) => (
@@ -43,7 +42,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                         week.map(day => (
                             <th key={formatDateKey(day)} className={`${headerStickyClass} top-[53px] p-2 font-normal text-center border-l w-10 sm:w-14 ${isToday(day) ? 'bg-primary/10' : ''}`}>
                                 <div className={`text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
-                                <div className={`text-base sm:text-lg font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
+                                <div className={`text-sm sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
                             </th>
                         ))
                     )}
@@ -53,17 +52,17 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                 {habits.map((habit) => {
                     return (
                         <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground w-24 sm:w-40 md:w-48">
+                            <td className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-40 md:w-48">
                                 <div className="flex items-center justify-between gap-2">
                                     <span className="flex-grow break-words">{habit.name}</span>
                                     <div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                                        <Button variant="ghost" className="h-7 w-7 p-1" onClick={() => onEditHabit(habit)}>
+                                        <Button variant="ghost" className="h-6 w-6 p-0.5" onClick={() => onEditHabit(habit)}>
                                             <span className="sr-only">Edit habit</span>
-                                            <Edit className="h-4 w-4" />
+                                            <Edit className="h-3.5 w-3.5" />
                                         </Button>
-                                        <Button variant="ghost" className="h-7 w-7 p-1 text-destructive hover:text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => onDeleteHabit(habit.id)}>
+                                        <Button variant="ghost" className="h-6 w-6 p-0.5 text-destructive hover:text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => onDeleteHabit(habit.id)}>
                                             <span className="sr-only">Delete habit</span>
-                                            <Trash2 className="h-4 w-4" />
+                                            <Trash2 className="h-3.5 w-3.5" />
                                         </Button>
                                     </div>
                                 </div>
@@ -77,7 +76,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                                             checked={!!habit.completions[dayKey]}
                                             onCheckedChange={(checked) => onHabitChange(habit.id, dayKey, !!checked)}
                                             aria-label={`Mark ${habit.name} for ${format(day, 'MMMM do')}`}
-                                            className="w-4 h-4 sm:w-5 sm:h-5 mx-auto rounded-md transition-all duration-300 data-[state=checked]:scale-110"
+                                            className="w-3.5 h-3.5 sm:w-4 sm:h-4 mx-auto rounded-sm transition-all duration-300 data-[state=checked]:scale-110"
                                         />
                                     </td>
                                     );
