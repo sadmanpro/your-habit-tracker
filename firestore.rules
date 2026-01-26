@@ -1,0 +1,152 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * Core Philosophy: This ruleset enforces a strict user-ownership model, often
+     * referred to as "data silos." Each user can only access data that exists
+     * within their own dedicated document tree. No data is shared between users,
+     * and users cannot see or interact with the data of others.
+     *
+     * Data Structure: All application data is nested under the top-level `users`
+     * collection. The hierarchy is `/users/{userId}/habits/{habitId}/completions/{completionId}`.
+     * This path-based structure is the primary mechanism for enforcing security.
+     *
+     * Key Security Decisions:
+     * - Default Deny: All access is denied by default. Rules explicitly grant
+     *   permissions on a case-by-case basis.
+     * - User Data Isolation: A user's authentication UID must match the `{userId}`
+     *   wildcard in the document path for any access to be granted.
+     * - No User Listing: It is not possible to query the top-level `/users` collection
+     *   to get a list of all application users.
+     * - Immutability of Ownership: Once a document is created, its core relational
+     *   links (e.g., `userId`, `habitId`) cannot be changed. This prevents a user
+     *   from re-assigning their own data to another user or another parent document.
+     */
+
+    // =====================================================================
+    // Helper Functions
+    // =====================================================================
+
+    /**
+     * Checks if a user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Validates that the requesting user's UID matches the document's owner ID
+     * from the URL path. This is the primary ownership check.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * A stricter version of isOwner used for update and delete operations.
+     * It ensures the document being modified actually exists in the database.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * On create, validates that the User document's internal `id` field
+     * matches the document ID from the path.
+     */
+    function isValidUserOnCreate(userId) {
+      return request.resource.data.id == userId;
+    }
+
+    /**
+     * On update, ensures the User document's `id` field is immutable.
+     */
+    function isUserImmutableOnUpdate() {
+      return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * On create, validates that the new Habit document's internal `userId`
+     * field correctly points back to the owner specified in the path.
+     */
+    function isValidHabitOnCreate(userId) {
+      return request.resource.data.userId == userId;
+    }
+
+    /**
+     * On update, ensures the Habit document's `userId` field is immutable.
+     */
+    function isHabitImmutableOnUpdate() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    /**
+     * On create, validates that the new completion record's `habitId` field
+     * correctly points back to the parent habit specified in the path.
+     */
+    function isValidCompletionOnCreate(habitId) {
+      return request.resource.data.habitId == habitId;
+    }
+
+    /**
+     * On update, ensures the completion record's `habitId` field is immutable.
+     */
+    function isCompletionImmutableOnUpdate() {
+      return request.resource.data.habitId == resource.data.habitId;
+    }
+
+    // =====================================================================
+    // Collection Rules
+    // =====================================================================
+
+    /**
+     * @description Manages user profile documents.
+     * @path /users/{userId}
+     * @allow (get) An authenticated user reads their own profile: `auth.uid == 'user_abc'`, `get /users/user_abc`
+     * @allow (create) A new user creates their own profile document: `auth.uid == 'user_abc'`, `create /users/user_abc` with `{id: 'user_abc', ...}`
+     * @deny (list) No user can list all users in the system: `auth.uid == 'user_abc'`, `list /users`
+     * @deny (delete) Users are not allowed to delete their own accounts directly.
+     * @principle Restricts access to a user's own data tree and allows for self-creation of a root profile document.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && isValidUserOnCreate(userId);
+      allow update: if isExistingOwner(userId) && isUserImmutableOnUpdate();
+      allow delete: if false;
+
+      /**
+       * @description Manages the habits for a specific user.
+       * @path /users/{userId}/habits/{habitId}
+       * @allow (create) An authenticated user creates a habit in their own collection: `auth.uid == 'user_abc'`, `create /users/user_abc/habits/habit_123`
+       * @allow (list) An authenticated user lists their own habits: `auth.uid == 'user_abc'`, `list /users/user_abc/habits`
+       * @deny (get) A user tries to read another user's habit: `auth.uid == 'user_xyz'`, `get /users/user_abc/habits/habit_123`
+       * @deny (update) A user tries to modify another user's habit: `auth.uid == 'user_xyz'`, `update /users/user_abc/habits/habit_123`
+       * @principle Enforces strict ownership for all operations on a user's private subcollection.
+       */
+      match /habits/{habitId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidHabitOnCreate(userId);
+        allow update: if isExistingOwner(userId) && isHabitImmutableOnUpdate();
+        allow delete: if isExistingOwner(userId);
+
+        /**
+         * @description Manages completion records for a specific habit.
+         * @path /users/{userId}/habits/{habitId}/completions/{completionId}
+         * @allow (create) A user marks their own habit as complete: `auth.uid == 'user_abc'`, `create /users/user_abc/habits/habit_123/completions/comp_456`
+         * @allow (list) A user lists all completions for one of their habits: `auth.uid == 'user_abc'`, `list /users/user_abc/habits/habit_123/completions`
+         * @deny (get) A user tries to read a completion record for another user's habit: `auth.uid == 'user_xyz'`, `get /users/user_abc/habits/habit_123/completions/comp_456`
+         * @deny (delete) A user tries to delete another user's completion record: `auth.uid == 'user_xyz'`, `delete /users/user_abc/habits/habit_123/completions/comp_456`
+         * @principle Extends the parent document's ownership rules to this nested subcollection, ensuring data remains private to the user.
+         */
+        match /completions/{completionId} {
+          allow get, list: if isOwner(userId);
+          allow create: if isOwner(userId) && isValidCompletionOnCreate(habitId);
+          allow update: if isExistingOwner(userId) && isCompletionImmutableOnUpdate();
+          allow delete: if isExistingOwner(userId);
+        }
+      }
+    }
+  }
+}

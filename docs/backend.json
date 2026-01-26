@@ -1,0 +1,171 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Verdant Habits application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user.",
+          "format": "uuid"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the user account was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "createdAt"
+      ]
+    },
+    "Habit": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Habit",
+      "type": "object",
+      "description": "Represents a habit being tracked by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the habit.",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Habit)"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the habit (e.g., 'Drink Water', 'Exercise')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A more detailed description of the habit."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the habit was created.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "name",
+        "createdAt"
+      ]
+    },
+    "HabitCompletion": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "HabitCompletion",
+      "type": "object",
+      "description": "Represents the completion status of a habit on a specific date.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the habit completion record.",
+          "format": "uuid"
+        },
+        "habitId": {
+          "type": "string",
+          "description": "Reference to Habit. (Relationship: Habit 1:N HabitCompletion)"
+        },
+        "completionDate": {
+          "type": "string",
+          "description": "The date for which the completion status is recorded.",
+          "format": "date"
+        },
+        "isCompleted": {
+          "type": "boolean",
+          "description": "Indicates whether the habit was completed on the specified date."
+        }
+      },
+      "required": [
+        "id",
+        "habitId",
+        "completionDate",
+        "isCompleted"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information. This collection is path-based and owned by the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/habits/{habitId}",
+        "definition": {
+          "entityName": "Habit",
+          "schema": {
+            "$ref": "#/backend/entities/Habit"
+          },
+          "description": "Stores habits for a specific user. This subcollection is path-based and owned by the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "habitId",
+              "description": "The unique identifier of the habit."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/habits/{habitId}/completions/{completionId}",
+        "definition": {
+          "entityName": "HabitCompletion",
+          "schema": {
+            "$ref": "#/backend/entities/HabitCompletion"
+          },
+          "description": "Stores habit completion records for a specific habit of a specific user. This subcollection is path-based and owned by the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "habitId",
+              "description": "The unique identifier of the habit."
+            },
+            {
+              "name": "completionId",
+              "description": "The unique identifier of the habit completion record."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to optimize for the application's focus on user-specific habit tracking and progress visualization. By structuring data under user-specific collections, we ensure data isolation and efficient querying. The structure prioritizes path-based ownership and avoids complex authorization logic, making security rules simpler and more robust.\n\n*   `/users/{userId}`: Stores user profiles.\n*   `/users/{userId}/habits/{habitId}`: Stores habits owned by a specific user.\n*   `/users/{userId}/habits/{habitId}/completions/{completionId}`: Stores completion records for each habit, nested under the habit document.\n\n**Authorization Independence (CRITICAL):**\n\nThis design inherently supports Authorization Independence. Because habits and their completion records are nested under the user's document, access control can be easily enforced based on the authenticated user ID (`request.auth.uid`). No `get()` calls are needed to verify ownership, as the path itself establishes the relationship.\n\n**QAPs (Rules are not Filters):**\n\nThe chosen structure facilitates secure `list` operations because all documents within a collection share the same security requirements. For example, listing habits under `/users/{userId}/habits` only requires verifying that `request.auth.uid == userId`. This structure avoids the need to filter based on document content, ensuring QAPs are met."
+  }
+}
