@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Habit } from '@/lib/habits-data';
 import DashboardHeader from './dashboard-header';
 import TrendAnalysisChart from './trend-analysis-chart';
@@ -11,19 +11,32 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/button';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User as UserIcon } from 'lucide-react';
 import {
   useUser,
   useFirestore,
   useAuth,
   useCollection,
+  useDoc,
   useMemoFirebase,
   addDocumentNonBlocking,
   updateDocumentNonBlocking,
   deleteDocumentNonBlocking,
+  errorEmitter,
+  FirestorePermissionError,
 } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
+
+const defaultHabits: Habit[] = [
+  {
+    id: 'default-drink-water',
+    name: 'Drink Water',
+    completions: {},
+    userId: 'anonymous',
+    createdAt: new Date().toISOString(),
+  },
+];
 
 export default function HabitTracker() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -35,39 +48,90 @@ export default function HabitTracker() {
   const firestore = useFirestore();
   const auth = useAuth();
 
+  useEffect(() => {
+    if (user && user.email) {
+      const userDocRef = doc(firestore, 'users', user.uid);
+      getDoc(userDocRef).then((docSnap) => {
+        if (!docSnap.exists()) {
+          const nameFromEmail = user.email.split('@')[0];
+          const displayName =
+            nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
+          const newUserDoc = {
+            id: user.uid,
+            email: user.email,
+            createdAt: new Date().toISOString(),
+            displayName: displayName,
+          };
+          setDoc(userDocRef, newUserDoc).catch((serverError) => {
+            const permissionError = new FirestorePermissionError({
+              path: userDocRef.path,
+              operation: 'create',
+              requestResourceData: newUserDoc,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+          });
+        }
+      });
+    }
+  }, [user, firestore]);
+
   const habitsQuery = useMemoFirebase(
     () => (user ? collection(firestore, 'users', user.uid, 'habits') : null),
     [firestore, user]
   );
   const { data: habits, isLoading: habitsLoading } = useCollection<Habit>(habitsQuery);
 
-  const loading = isUserLoading || habitsLoading;
+  const userDocRef = useMemoFirebase(
+    () => (user ? doc(firestore, 'users', user.uid) : null),
+    [firestore, user]
+  );
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<{ displayName: string }>(userDocRef);
+
+  const loading = isUserLoading || (user && (habitsLoading || isProfileLoading));
+  const displayedHabits = user ? habits : defaultHabits;
 
   const handleHabitChange = (habitId: string, date: string, checked: boolean) => {
-    if (!user) return;
+    if (!user) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
     const habitRef = doc(firestore, 'users', user.uid, 'habits', habitId);
     // Firestore's dot notation is used to update a field within a map.
     updateDocumentNonBlocking(habitRef, { [`completions.${date}`]: checked });
   };
   
   const handleOpenAddDialog = () => {
+    if (!user) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
     setHabitToEdit(null);
     setIsAddEditDialogOpen(true);
   };
 
   const handleOpenEditDialog = (habit: Habit) => {
+    if (!user) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
     setHabitToEdit(habit);
     setIsAddEditDialogOpen(true);
   };
 
   const handleDeleteHabit = (habitId: string) => {
-    if (!user) return;
+    if (!user) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
     const habitRef = doc(firestore, 'users', user.uid, 'habits', habitId);
     deleteDocumentNonBlocking(habitRef);
   };
 
   const handleSaveHabit = (habitData: Omit<Habit, 'id' | 'completions' | 'userId' | 'createdAt'> & { id?: string }) => {
-    if (!user) return;
+    if (!user) {
+      setIsAuthDialogOpen(true);
+      return;
+    }
     const habitsCol = collection(firestore, 'users', user.uid, 'habits');
 
     if (habitData.id) {
@@ -130,15 +194,22 @@ export default function HabitTracker() {
                 </Button>
               ) : (
                 <Button variant="outline" size="icon" onClick={() => setIsAuthDialogOpen(true)}>
-                    <User className="h-6 w-6" />
+                    <UserIcon className="h-6 w-6" />
                     <span className="sr-only">Open profile</span>
                 </Button>
               )}
             </div>
           </div>
+          {user && userProfile && (
+            <div className="mt-4">
+              <p className="text-xl font-semibold text-foreground">
+                Hello, {userProfile.displayName}!
+              </p>
+            </div>
+          )}
         </header>
 
-        <DashboardHeader habits={habits || []} currentDate={currentDate} />
+        <DashboardHeader habits={displayedHabits || []} currentDate={currentDate} />
         
         <div className="grid grid-cols-1 gap-6">
           <Card>
@@ -146,13 +217,13 @@ export default function HabitTracker() {
                 <CardTitle className="text-xl sm:text-2xl">Monthly Trend</CardTitle>
             </CardHeader>
             <CardContent className="pl-2 pr-6">
-              <TrendAnalysisChart habits={habits || []} currentDate={currentDate} />
+              <TrendAnalysisChart habits={displayedHabits || []} currentDate={currentDate} />
             </CardContent>
           </Card>
         </div>
         
         <HabitGrid 
-          habits={habits || []} 
+          habits={displayedHabits || []} 
           currentDate={currentDate} 
           onHabitChange={handleHabitChange}
           onEditHabit={handleOpenEditDialog}

@@ -16,6 +16,10 @@
           "description": "Email address of the user.",
           "format": "email"
         },
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the user."
+        },
         "createdAt": {
           "type": "string",
           "description": "Timestamp indicating when the user account was created.",
@@ -25,7 +29,8 @@
       "required": [
         "id",
         "email",
-        "createdAt"
+        "createdAt",
+        "displayName"
       ]
     },
     "Habit": {

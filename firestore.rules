@@ -56,15 +56,25 @@ service cloud.firestore {
      * matches the document ID from the path.
      */
     function isValidUserOnCreate(userId) {
-      return request.resource.data.id == userId;
+        let data = request.resource.data;
+        return isOwner(userId)
+            && data.id == userId
+            && data.email == request.auth.token.email
+            && data.displayName is string && data.displayName.size() > 0 && data.displayName.size() < 50
+            && data.createdAt is string;
     }
 
     /**
-     * On update, ensures the User document's `id` field is immutable.
+     * On update, ensures the User document's core fields are immutable.
      */
     function isUserImmutableOnUpdate() {
-      return request.resource.data.id == resource.data.id;
+        let data = request.resource.data;
+        let existingData = resource.data;
+        return data.id == existingData.id
+            && data.email == existingData.email
+            && data.createdAt == existingData.createdAt;
     }
+
 
     /**
      * On create, validates that the new Habit document's internal `userId`
@@ -97,7 +107,7 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId) && isValidUserOnCreate(userId);
+      allow create: if isValidUserOnCreate(userId);
       allow update: if isExistingOwner(userId) && isUserImmutableOnUpdate();
       allow delete: if false;
 
