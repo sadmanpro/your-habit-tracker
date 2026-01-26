@@ -25,7 +25,7 @@ import {
   errorEmitter,
   FirestorePermissionError,
 } from '@/firebase';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, query, orderBy } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 
 const defaultHabits: Habit[] = [
@@ -76,7 +76,7 @@ export default function HabitTracker() {
   }, [user, firestore]);
 
   const habitsQuery = useMemoFirebase(
-    () => (user ? collection(firestore, 'users', user.uid, 'habits') : null),
+    () => (user ? query(collection(firestore, 'users', user.uid, 'habits'), orderBy('createdAt', 'desc')) : null),
     [firestore, user]
   );
   const { data: habits, isLoading: habitsLoading } = useCollection<Habit>(habitsQuery);

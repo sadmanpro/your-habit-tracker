@@ -5,8 +5,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
 import { getDaysInCurrentWeek, formatDateKey } from '@/lib/date-utils';
@@ -93,7 +91,6 @@ export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgr
               <Cell key={`cell-${entry.id}`} fill={entry.fill} className="outline-none" />
             ))}
           </Pie>
-          <ChartLegend content={<ChartLegendContent nameKey="name" layout="vertical" align="right" verticalAlign="middle" />} />
         </PieChart>
       </ChartContainer>
     </div>
