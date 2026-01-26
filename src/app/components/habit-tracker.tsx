@@ -9,6 +9,9 @@ import HabitGrid from './habit-grid';
 import AddEditHabitDialog from './add-edit-habit-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ThemeToggle } from './theme-toggle';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
 
 const HABIT_STORAGE_KEY = 'verdant-habits-data';
 
@@ -119,9 +122,18 @@ export default function HabitTracker() {
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <header>
-          <div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">YOUR HABIT TRACKER</h1>
-            <p className="text-muted-foreground text-sm sm:text-base">Cultivate consistency, one day at a time.</p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-2xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">YOUR HABIT TRACKER</h1>
+              <p className="text-muted-foreground text-sm sm:text-base">Cultivate consistency, one day at a time.</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              <Button variant="outline" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </div>
           </div>
         </header>
 
