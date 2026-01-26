@@ -48,6 +48,27 @@ export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgr
       };
     }).filter(item => item.completions > 0);
   }, [habits, daysInWeek]);
+  
+  const weeklyStats = useMemo(() => {
+    if (!habits || habits.length === 0) {
+      return {
+        percentage: 0,
+      };
+    }
+    const totalPossibleCompletions = habits.length * daysInWeek.length;
+    
+    const totalCompleted = habits.reduce((total, habit) => {
+        const habitCompletions = daysInWeek.reduce((count, day) => {
+            const dateKey = formatDateKey(day);
+            return count + (habit.completions[dateKey] ? 1 : 0);
+        }, 0);
+        return total + habitCompletions;
+    }, 0);
+
+    return {
+      percentage: totalPossibleCompletions > 0 ? Math.round((totalCompleted / totalPossibleCompletions) * 100) : 0,
+    };
+  }, [habits, daysInWeek]);
 
   const chartConfig = useMemo(() => {
     if (!chartData) return {};
@@ -61,17 +82,16 @@ export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgr
     return config;
   }, [chartData]);
 
-
-  if (chartData.length === 0) {
-    return (
-        <div className="flex flex-col items-center justify-center h-48 w-72 text-muted-foreground text-xs text-center p-4">
-            <span>No progress to show for this week.</span>
-        </div>
-    );
-  }
-
   return (
     <div className="relative h-48 w-72 flex items-center justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold tabular-nums">
+            {weeklyStats.percentage}<span className="text-xl font-normal">%</span>
+            </span>
+            <span className="text-xs text-muted-foreground">
+            Weekly Goal
+            </span>
+        </div>
       <ChartContainer
         config={chartConfig}
         className="mx-auto aspect-auto h-full w-full"
