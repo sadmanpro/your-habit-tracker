@@ -9,7 +9,7 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
-import { getDaysInMonth, formatDateKey } from '@/lib/date-utils';
+import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
 import { useMemo } from 'react';
 
 type MonthlyProgressChartProps = {
@@ -26,25 +26,28 @@ const CHART_COLORS = [
 ];
 
 export default function MonthlyProgressChart({ habits, currentDate }: MonthlyProgressChartProps) {
-  const daysInMonth = useMemo(() => getDaysInMonth(currentDate), [currentDate]);
+  const weeksInMonth = useMemo(() => getWeeksInMonth(currentDate), [currentDate]);
 
   const chartData = useMemo(() => {
     if (!habits || habits.length === 0) return [];
     
-    return habits.map((habit, index) => {
-      const completedCount = daysInMonth.filter(day => {
-        const dateKey = formatDateKey(day);
-        return !!habit.completions[dateKey];
-      }).length;
-      
-      return {
-        id: habit.id,
-        name: habit.name,
-        completions: completedCount,
-        fill: CHART_COLORS[index % CHART_COLORS.length],
-      };
+    return weeksInMonth.map((week, index) => {
+        const weekCompletions = week.reduce((totalCompletions, day) => {
+            const dateKey = formatDateKey(day);
+            const dayCompletions = habits.reduce((habitCompletions, habit) => {
+                return habitCompletions + (habit.completions[dateKey] ? 1 : 0);
+            }, 0);
+            return totalCompletions + dayCompletions;
+        }, 0);
+
+        return {
+            id: `week-${index + 1}`,
+            name: `Week ${index + 1}`,
+            completions: weekCompletions,
+            fill: CHART_COLORS[index % CHART_COLORS.length],
+        };
     }).filter(item => item.completions > 0);
-  }, [habits, daysInMonth]);
+  }, [habits, weeksInMonth]);
 
   const chartConfig = useMemo(() => {
     if (!chartData) return {};
