@@ -23,7 +23,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
             <table className="min-w-full text-sm border-collapse">
             <thead className="text-muted-foreground">
                 <tr className="border-b">
-                    <th className={`${firstColStickyClass} p-3 font-semibold text-left text-foreground w-48`}>
+                    <th className={`${firstColStickyClass} p-3 font-semibold text-left text-foreground w-32 sm:w-40 md:w-48`}>
                         Habit
                     </th>
                     {weeks.map((week, index) => (
@@ -36,9 +36,9 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
                     <th className={`${firstColStickyClass} top-[53px]`}></th>
                     {weeks.flatMap(week =>
                         week.map(day => (
-                            <th key={formatDateKey(day)} className={`${headerStickyClass} top-[53px] p-2 font-normal text-center border-l w-14 ${isToday(day) ? 'bg-primary/10' : ''}`}>
+                            <th key={formatDateKey(day)} className={`${headerStickyClass} top-[53px] p-2 font-normal text-center border-l w-12 sm:w-14 ${isToday(day) ? 'bg-primary/10' : ''}`}>
                                 <div className={`text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
-                                <div className={`text-lg font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
+                                <div className={`text-base sm:text-lg font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
                             </th>
                         ))
                     )}
@@ -48,7 +48,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
                 {habits.map((habit) => {
                     return (
                         <tr key={habit.id} className="border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground whitespace-nowrap w-48">{habit.name}</td>
+                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground whitespace-nowrap w-32 sm:w-40 md:w-48">{habit.name}</td>
                             {weeks.flatMap(week =>
                                 week.map(day => {
                                     const dayKey = formatDateKey(day);
@@ -58,7 +58,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
                                             checked={!!habit.completions[dayKey]}
                                             onCheckedChange={(checked) => onHabitChange(habit.id, dayKey, !!checked)}
                                             aria-label={`Mark ${habit.name} for ${format(day, 'MMMM do')}`}
-                                            className="w-6 h-6 mx-auto rounded-md transition-all duration-300 data-[state=checked]:scale-110"
+                                            className="w-5 h-5 sm:w-6 sm:h-6 mx-auto rounded-md transition-all duration-300 data-[state=checked]:scale-110"
                                         />
                                     </td>
                                     );

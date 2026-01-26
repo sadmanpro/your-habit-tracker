@@ -26,7 +26,7 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
           <Calendar className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-bold text-primary">{formattedDate}</p>
+          <p className="text-xl sm:text-2xl font-bold text-primary">{formattedDate}</p>
         </CardContent>
       </Card>
       <Card className="md:col-span-2">

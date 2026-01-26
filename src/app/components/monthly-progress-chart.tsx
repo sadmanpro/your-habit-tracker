@@ -61,7 +61,7 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
         </PieChart>
       </ChartContainer>
        <div className="absolute flex items-center justify-center inset-0">
-        <span className="text-2xl font-bold text-accent">{Math.round(completionPercentage)}%</span>
+        <span className="text-xl sm:text-2xl font-bold text-accent">{Math.round(completionPercentage)}%</span>
       </div>
     </div>
   );
