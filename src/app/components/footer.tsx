@@ -13,13 +13,13 @@ export default function Footer() {
                 <p className='text-sm text-muted-foreground'>Developer of your habit tracker</p>
             </div>
             <div className="flex items-center space-x-4">
-                <Link href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="text-muted-foreground hover:text-primary transition-all duration-200 hover:-translate-y-px">
                 <Github className="h-5 w-5" />
                 </Link>
-                <Link href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-primary transition-all duration-200 hover:-translate-y-px">
                 <Linkedin className="h-5 w-5" />
                 </Link>
-                <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter" className="text-muted-foreground hover:text-primary transition-all duration-200 hover:-translate-y-px">
                 <Twitter className="h-5 w-5" />
                 </Link>
             </div>

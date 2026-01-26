@@ -133,7 +133,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                                   return (
                                   <td
                                     key={dayKey}
-                                    className={cn("p-2 text-center border-l cursor-pointer", getDayColumnStyle(day))}
+                                    className={cn("p-2 text-center border-l cursor-pointer transition-all duration-150 hover:brightness-95 active:brightness-90", getDayColumnStyle(day))}
                                     onClick={() => onHabitChange(habit.id, dayKey, !habit.completions[dayKey])}
                                   >
                                       <Checkbox

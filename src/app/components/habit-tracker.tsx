@@ -181,7 +181,10 @@ export default function HabitTracker() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <header>
+        <header
+          className="animate-in fade-in duration-500"
+          style={{ animationFillMode: 'backwards' }}
+        >
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">YOUR HABIT TRACKER</h1>
@@ -211,9 +214,17 @@ export default function HabitTracker() {
           )}
         </header>
 
-        <DashboardHeader habits={displayedHabits || []} currentDate={currentDate} />
+        <div
+          className="animate-in fade-in slide-in-from-top-4 duration-500"
+          style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
+        >
+          <DashboardHeader habits={displayedHabits || []} currentDate={currentDate} />
+        </div>
         
-        <div className="grid grid-cols-1 gap-6">
+        <div
+          className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-top-4 duration-500"
+          style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}
+        >
           <Card>
             <CardHeader>
                 <CardTitle className="text-xl sm:text-2xl">Monthly Trend</CardTitle>
@@ -224,16 +235,33 @@ export default function HabitTracker() {
           </Card>
         </div>
         
-        <HabitGrid 
-          habits={displayedHabits || []} 
-          currentDate={currentDate} 
-          onHabitChange={handleHabitChange}
-          onEditHabit={handleOpenEditDialog}
-          onDeleteHabit={handleDeleteHabit}
-          onAddHabit={handleOpenAddDialog} 
-        />
-        <DailyQuote currentDate={currentDate} />
-        <Footer />
+        <div
+          className="animate-in fade-in slide-in-from-top-4 duration-500"
+          style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}
+        >
+          <HabitGrid 
+            habits={displayedHabits || []} 
+            currentDate={currentDate} 
+            onHabitChange={handleHabitChange}
+            onEditHabit={handleOpenEditDialog}
+            onDeleteHabit={handleDeleteHabit}
+            onAddHabit={handleOpenAddDialog} 
+          />
+        </div>
+        
+        <div
+          className="animate-in fade-in slide-in-from-top-4 duration-500"
+          style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}
+        >
+          <DailyQuote currentDate={currentDate} />
+        </div>
+        
+        <div
+          className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+          style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}
+        >
+          <Footer />
+        </div>
       </div>
        <AddEditHabitDialog
         isOpen={isAddEditDialogOpen}
