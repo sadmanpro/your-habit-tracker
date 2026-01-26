@@ -122,7 +122,7 @@ export default function HabitTracker() {
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-primary font-headline tracking-tight">Verdant Habits</h1>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">Verdant Habits</h1>
             <p className="text-muted-foreground">Cultivate consistency, one day at a time.</p>
           </div>
           <Button onClick={handleOpenAddDialog}>

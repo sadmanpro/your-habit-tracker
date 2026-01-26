@@ -55,7 +55,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <table className="min-w-full text-xs sm:text-sm border-collapse">
               <thead className="text-muted-foreground">
                   <tr className="border-b">
-                      <th className={`${firstColStickyClass} p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-40 md:w-48 whitespace-nowrap`}>
+                      <th className={`${firstColStickyClass} p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-40 md:w-48 whitespace-nowrap border-r`}>
                           Habit
                       </th>
                       {weeks.map((week, index) => (
@@ -65,7 +65,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       ))}
                   </tr>
                   <tr className="border-b">
-                      <th className={`${firstColStickyClass} top-[53px]`}></th>
+                      <th className={`${firstColStickyClass} top-[53px] border-r`}></th>
                       {weeks.flatMap(week =>
                           week.map(day => (
                               <th key={formatDateKey(day)} className={`${headerStickyClass} top-[53px] p-2 font-normal text-center border-l w-10 sm:w-14 ${isToday(day) ? 'bg-primary/10' : ''}`}>
@@ -79,7 +79,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <tbody>
                   {habits.map((habit) => (
                       <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                          <td className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-32 md:w-48">
+                          <td className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-32 md:w-48 border-r">
                                <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                       <div className="flex items-center justify-between gap-2 cursor-pointer w-full">

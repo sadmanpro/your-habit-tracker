@@ -20,12 +20,12 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
 
   return (
     <Card>
-      <CardContent className="p-4 flex items-center justify-between">
+      <CardContent className="p-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
           <div>
             <p className="text-xs sm:text-sm text-muted-foreground">Today</p>
-            <p className="text-base sm:text-xl font-bold text-primary">{formattedDate}</p>
+            <p className="text-lg sm:text-2xl font-bold text-primary">{formattedDate}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-4">
