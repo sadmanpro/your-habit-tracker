@@ -75,7 +75,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <table className="min-w-full text-xs sm:text-sm border-collapse">
               <thead className="text-muted-foreground sticky top-0 z-20 bg-card">
                   <tr className="border-b">
-                      <th className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-semibold text-left text-foreground w-24 sm:w-32 md:w-48 whitespace-nowrap border-r">
+                      <th className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-32 md:w-48 whitespace-nowrap border-r">
                           Habit
                       </th>
                       {weeks.map((week, index) => (
@@ -88,7 +88,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       <th className="sticky left-0 bg-card z-30 border-r"></th>
                       {weeks.flatMap(week =>
                           week.map(day => (
-                              <th key={formatDateKey(day)} className={cn("p-2 font-normal text-center border-l w-10 sm:w-14", getDayColumnStyle(day))}>
+                              <th key={formatDateKey(day)} className={cn("p-2 font-normal text-center border-l w-9 sm:w-14", getDayColumnStyle(day))}>
                                   <div className={`text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
                                   <div className={`text-xs sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
                               </th>
@@ -99,7 +99,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <tbody>
                   {habits.map((habit) => (
                       <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                          <td className="sticky left-0 bg-card z-10 p-2 sm:p-3 font-medium text-foreground w-24 sm:w-32 md:w-48 border-r">
+                          <td className="sticky left-0 bg-card z-10 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-32 md:w-48 border-r">
                                <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                       <div className="flex items-center justify-between gap-2 cursor-pointer w-full">
