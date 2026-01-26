@@ -5,11 +5,9 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
-import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
+import { getWeeksInMonth, getDaysInMonth, formatDateKey } from '@/lib/date-utils';
 import { useMemo } from 'react';
 
 type MonthlyProgressChartProps = {
@@ -32,6 +30,7 @@ const CHART_COLORS = [
 
 export default function MonthlyProgressChart({ habits, currentDate }: MonthlyProgressChartProps) {
   const weeksInMonth = useMemo(() => getWeeksInMonth(currentDate), [currentDate]);
+  const daysInMonth = useMemo(() => getDaysInMonth(currentDate), [currentDate]);
 
   const chartData = useMemo(() => {
     if (!habits || habits.length === 0) return [];
@@ -53,6 +52,27 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
         };
     }).filter(item => item.completions > 0);
   }, [habits, weeksInMonth]);
+  
+  const monthlyStats = useMemo(() => {
+    if (!habits || habits.length === 0) {
+      return {
+        percentage: 0,
+      };
+    }
+    const totalPossibleCompletions = habits.length * daysInMonth.length;
+    
+    const totalCompleted = daysInMonth.reduce((total, day) => {
+        const dateKey = formatDateKey(day);
+        const dayCompletions = habits.reduce((count, habit) => {
+            return count + (habit.completions[dateKey] ? 1 : 0);
+        }, 0);
+        return total + dayCompletions;
+    }, 0);
+
+    return {
+      percentage: totalPossibleCompletions > 0 ? Math.round((totalCompleted / totalPossibleCompletions) * 100) : 0,
+    };
+  }, [habits, daysInMonth]);
 
   const chartConfig = useMemo(() => {
     if (!chartData) return {};
@@ -66,17 +86,16 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
     return config;
   }, [chartData]);
 
-
-  if (chartData.length === 0) {
-    return (
-        <div className="flex flex-col items-center justify-center h-48 w-72 text-muted-foreground text-xs text-center p-4">
-            <span>No progress to show for this month.</span>
-        </div>
-    );
-  }
-
   return (
     <div className="relative h-48 w-72 flex items-center justify-center">
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold tabular-nums">
+            {monthlyStats.percentage}<span className="text-xl font-normal">%</span>
+            </span>
+            <span className="text-xs text-muted-foreground">
+            Monthly Goal
+            </span>
+        </div>
       <ChartContainer
         config={chartConfig}
         className="mx-auto aspect-auto h-full w-full"
@@ -96,7 +115,6 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
               <Cell key={`cell-${entry.id}`} fill={entry.fill} className="outline-none" />
             ))}
           </Pie>
-          <ChartLegend content={<ChartLegendContent nameKey="name" layout="vertical" align="right" verticalAlign="middle" />} />
         </PieChart>
       </ChartContainer>
     </div>
