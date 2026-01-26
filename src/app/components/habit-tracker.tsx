@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/button';
-import { Menu } from 'lucide-react';
+import { User } from 'lucide-react';
 
 const HABIT_STORAGE_KEY = 'verdant-habits-data';
 
@@ -129,9 +129,9 @@ export default function HabitTracker() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Button variant="outline" size="icon" className="md:hidden">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Open menu</span>
+              <Button variant="outline" size="icon">
+                <User className="h-6 w-6" />
+                <span className="sr-only">Open profile</span>
               </Button>
             </div>
           </div>
