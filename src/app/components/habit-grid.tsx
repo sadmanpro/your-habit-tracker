@@ -21,11 +21,12 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
 
   return (
     <Card className="w-full overflow-hidden shadow-lg">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto relative">
+            <div className="absolute top-0 right-0 h-full w-[19rem] bg-primary/10 z-10" />
             <table className="min-w-full border-separate border-spacing-0 text-sm">
             <thead className="text-muted-foreground">
                 <tr className="border-b">
-                    <th className={`${headerStickyClass} ${firstColStickyClass} p-3 font-semibold text-left text-foreground w-48`}>
+                    <th className={`${firstColStickyClass} p-3 font-semibold text-left text-foreground w-48`}>
                         Habit
                     </th>
                     {weeks.map((week, index) => (
@@ -33,18 +34,18 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
                             Week {index + 1}
                         </th>
                     ))}
-                    <th className={`${headerStickyClass} sticky right-[12rem] bg-card z-20 p-3 font-semibold text-center text-foreground border-l w-28`}>
+                    <th className={`sticky top-0 right-[12rem] bg-transparent z-20 p-3 font-semibold text-center text-foreground border-l w-28`}>
                         Completed
                     </th>
-                    <th className={`${headerStickyClass} sticky right-[5rem] bg-card z-20 p-3 font-semibold text-center text-foreground border-l w-28`}>
+                    <th className={`sticky top-0 right-[5rem] bg-transparent z-20 p-3 font-semibold text-center text-foreground border-l w-28`}>
                         Progress
                     </th>
-                    <th className={`${headerStickyClass} sticky right-0 bg-card z-20 p-3 font-semibold text-center text-foreground border-l w-20`}>
+                    <th className={`sticky top-0 right-0 bg-transparent z-20 p-3 font-semibold text-center text-foreground border-l w-20`}>
                         %
                     </th>
                 </tr>
                 <tr className="border-b">
-                    <th className={`${headerStickyClass} ${firstColStickyClass} top-[53px]`}></th>
+                    <th className={`${firstColStickyClass} top-[53px]`}></th>
                     {weeks.flatMap(week =>
                         week.map(day => (
                             <th key={formatDateKey(day)} className={`${headerStickyClass} top-[53px] p-2 font-normal text-center border-l w-14 ${isToday(day) ? 'bg-primary/10' : ''}`}>
@@ -53,9 +54,9 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
                             </th>
                         ))
                     )}
-                    <th className={`${headerStickyClass} sticky top-[53px] right-[12rem] bg-card z-20 border-l w-28`}></th>
-                    <th className={`${headerStickyClass} sticky top-[53px] right-[5rem] bg-card z-20 border-l w-28`}></th>
-                    <th className={`${headerStickyClass} sticky top-[53px] right-0 bg-card z-20 border-l w-20`}></th>
+                    <th className={`sticky top-[53px] right-[12rem] bg-transparent z-20 border-l w-28`}></th>
+                    <th className={`sticky top-[53px] right-[5rem] bg-transparent z-20 border-l w-28`}></th>
+                    <th className={`sticky top-[53px] right-0 bg-transparent z-20 border-l w-20`}></th>
                 </tr>
             </thead>
             <tbody>
@@ -88,13 +89,13 @@ export default function HabitGrid({ habits, currentDate, onHabitChange }: HabitG
                                     );
                                 })
                             )}
-                            <td className="sticky right-[12rem] bg-card p-3 text-center border-l w-28 font-medium">
+                            <td className="sticky right-[12rem] bg-transparent z-20 p-3 text-center border-l w-28 font-medium">
                                 {completedCount}/{totalDaysInMonth}
                             </td>
-                            <td className="sticky right-[5rem] bg-card p-3 text-center border-l w-28">
+                            <td className="sticky right-[5rem] bg-transparent z-20 p-3 text-center border-l w-28">
                                 <Progress value={completionPercentage} className="h-3 w-full bg-muted [&>div]:bg-accent" />
                             </td>
-                            <td className="sticky right-0 bg-card p-3 text-center font-bold text-accent border-l w-20">
+                            <td className="sticky right-0 bg-transparent z-20 p-3 text-center font-bold text-accent border-l w-20">
                                 {Math.round(completionPercentage)}%
                             </td>
                         </tr>
