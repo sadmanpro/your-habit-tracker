@@ -1,3 +1,4 @@
+
 'use client';
 import type { Habit } from '@/lib/habits-data';
 import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
@@ -27,7 +28,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
             <table className="min-w-full text-sm border-collapse">
             <thead className="text-muted-foreground">
                 <tr className="border-b">
-                    <th className={`${firstColStickyClass} p-3 font-semibold text-left text-foreground w-32 sm:w-40 md:w-48 whitespace-nowrap`}>
+                    <th className={`${firstColStickyClass} p-3 font-semibold text-left text-foreground w-24 sm:w-40 md:w-48 whitespace-nowrap`}>
                         Habit
                     </th>
                     {weeks.map((week, index) => (
@@ -52,7 +53,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                 {habits.map((habit) => {
                     return (
                         <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground w-32 sm:w-40 md:w-48">
+                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground w-24 sm:w-40 md:w-48">
                                 <div className="flex items-center justify-between gap-2">
                                     <span className="flex-grow break-words">{habit.name}</span>
                                     <div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
