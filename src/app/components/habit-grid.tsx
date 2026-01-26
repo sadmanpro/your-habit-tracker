@@ -4,13 +4,7 @@ import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2 } from 'lucide-react';
 import { format, isToday } from 'date-fns';
 
 type HabitGridProps = {
@@ -41,7 +35,6 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                             Week {index + 1}
                         </th>
                     ))}
-                     <th className="sticky right-0 bg-card z-30 p-3 font-semibold text-left text-foreground">Actions</th>
                 </tr>
                 <tr className="border-b">
                     <th className={`${firstColStickyClass} top-[53px]`}></th>
@@ -53,14 +46,27 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                             </th>
                         ))
                     )}
-                    <th className="sticky right-0 bg-card z-30 top-[53px]"></th>
                 </tr>
             </thead>
             <tbody>
                 {habits.map((habit) => {
                     return (
-                        <tr key={habit.id} className="border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground w-32 sm:w-40 md:w-48 break-words">{habit.name}</td>
+                        <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
+                            <td className="sticky left-0 bg-card z-30 p-3 font-medium text-foreground w-32 sm:w-40 md:w-48">
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="flex-grow break-words">{habit.name}</span>
+                                    <div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
+                                        <Button variant="ghost" className="h-7 w-7 p-1" onClick={() => onEditHabit(habit)}>
+                                            <span className="sr-only">Edit habit</span>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="ghost" className="h-7 w-7 p-1 text-destructive hover:text-destructive focus:text-destructive focus:bg-destructive/10" onClick={() => onDeleteHabit(habit.id)}>
+                                            <span className="sr-only">Delete habit</span>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </td>
                             {weeks.flatMap(week =>
                                 week.map(day => {
                                     const dayKey = formatDateKey(day);
@@ -76,29 +82,6 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                                     );
                                 })
                             )}
-                            <td className="sticky right-0 bg-card z-30 p-2 text-center">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="h-8 w-8 p-0">
-                                            <span className="sr-only">Open menu</span>
-                                            <MoreVertical className="h-4 w-4" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <DropdownMenuItem onClick={() => onEditHabit(habit)}>
-                                            <Edit className="mr-2 h-4 w-4" />
-                                            <span>Edit</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                            onClick={() => onDeleteHabit(habit.id)}
-                                            className="text-destructive focus:text-destructive focus:bg-destructive/10"
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            <span>Delete</span>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </td>
                         </tr>
                     );
                 })}
