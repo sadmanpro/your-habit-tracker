@@ -5,70 +5,91 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
 import { getDaysInCurrentWeek, formatDateKey } from '@/lib/date-utils';
+import { useMemo } from 'react';
 
 type WeeklyProgressChartProps = {
   habits: Habit[];
   currentDate: Date;
 };
 
-export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgressChartProps) {
-  const daysInWeek = getDaysInCurrentWeek(currentDate);
-  const totalPossibleCompletions = habits.length * daysInWeek.length;
+const CHART_COLORS = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+];
 
-  const totalCompleted = habits.reduce((acc, habit) => {
-    return acc + daysInWeek.filter(day => {
+export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgressChartProps) {
+  const daysInWeek = useMemo(() => getDaysInCurrentWeek(currentDate), [currentDate]);
+
+  const chartData = useMemo(() => {
+    if (!habits || habits.length === 0) return [];
+    
+    return habits.map((habit, index) => {
+      const completedCount = daysInWeek.filter(day => {
         const dateKey = formatDateKey(day);
         return !!habit.completions[dateKey];
-    }).length;
-  }, 0);
-  
-  const completionPercentage = totalPossibleCompletions > 0 ? (totalCompleted / totalPossibleCompletions) * 100 : 0;
+      }).length;
+      
+      return {
+        name: habit.name,
+        completions: completedCount,
+        fill: CHART_COLORS[index % CHART_COLORS.length],
+      };
+    }).filter(item => item.completions > 0);
+  }, [habits, daysInWeek]);
 
-  const getProgressColor = () => {
-    if (completionPercentage === 100) return 'hsl(var(--accent))'; // green
-    if (completionPercentage >= 75) return 'hsl(var(--chart-4))'; // yellow
-    if (completionPercentage >= 50) return 'hsl(var(--destructive))'; // red
-    return 'hsl(var(--destructive))'; // Also red for < 50%
+  const chartConfig = useMemo(() => {
+    if (!chartData) return {};
+    const config: any = {};
+    chartData.forEach(item => {
+        config[item.name] = {
+            label: item.name,
+            color: item.fill,
+        };
+    });
+    return config;
+  }, [chartData]);
+
+
+  if (chartData.length === 0) {
+    return (
+        <div className="flex flex-col items-center justify-center h-32 w-48 text-muted-foreground text-xs text-center p-4">
+            <span>No progress to show for this week.</span>
+        </div>
+    );
   }
 
-  const progressColor = getProgressColor();
-
-  const chartData = [
-    { name: 'Completed', value: completionPercentage, fill: progressColor },
-    { name: 'Remaining', value: 100 - completionPercentage, fill: 'hsl(var(--muted))' },
-  ];
-
-  const chartConfig = {};
-
   return (
-    <div className="relative h-14 w-14 flex items-center justify-center">
+    <div className="relative h-32 w-48 flex items-center justify-center">
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square h-full"
+        className="mx-auto aspect-auto h-full w-full"
       >
         <PieChart>
-          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel hideIndicator />} />
+          <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
           <Pie
             data={chartData}
-            dataKey="value"
+            dataKey="completions"
             nameKey="name"
-            innerRadius={18}
-            outerRadius={24}
+            innerRadius={40}
+            outerRadius={60}
             paddingAngle={2}
             stroke="none"
           >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} className="outline-none" />
+            {chartData.map((entry) => (
+              <Cell key={`cell-${entry.name}`} fill={entry.fill} className="outline-none" />
             ))}
           </Pie>
+          <ChartLegend content={<ChartLegendContent nameKey="name" layout="vertical" align="right" verticalAlign="middle" />} />
         </PieChart>
       </ChartContainer>
-       <div className="absolute flex items-center justify-center inset-0">
-        <span className="text-base font-bold" style={{ color: progressColor }}>{Math.round(completionPercentage)}%</span>
-      </div>
     </div>
   );
 }

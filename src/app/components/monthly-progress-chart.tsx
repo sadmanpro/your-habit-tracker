@@ -1,74 +1,107 @@
 'use client';
 
-import { Pie, PieChart, Cell } from 'recharts';
+import { RadialBar, RadialBarChart } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
-import { getDaysInMonth, formatDateKey } from '@/lib/date-utils';
+import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
+import { useMemo } from 'react';
 
 type MonthlyProgressChartProps = {
   habits: Habit[];
   currentDate: Date;
 };
 
+const CHART_COLORS = [
+  'hsl(var(--chart-1))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+];
+
 export default function MonthlyProgressChart({ habits, currentDate }: MonthlyProgressChartProps) {
-  const daysInMonth = getDaysInMonth(currentDate);
-  const totalPossibleCompletions = habits.length * daysInMonth.length;
+  const weeksInMonth = useMemo(() => getWeeksInMonth(currentDate), [currentDate]);
 
-  const totalCompleted = habits.reduce((acc, habit) => {
-    return acc + daysInMonth.filter(day => {
-        const dateKey = formatDateKey(day);
-        return !!habit.completions[dateKey];
-    }).length;
-  }, 0);
+  const chartData = useMemo(() => {
+    if (!habits || habits.length === 0) return null;
+
+    const weekData = weeksInMonth.map((week, index) => {
+      const totalPossible = habits.length * week.length;
+      if (totalPossible === 0) {
+        return { name: `Week ${index + 1}`, percentage: 0, fill: CHART_COLORS[index % CHART_COLORS.length] };
+      }
+      
+      const totalCompleted = habits.reduce((acc, habit) => {
+        return acc + week.filter(day => {
+          const dateKey = formatDateKey(day);
+          return !!habit.completions[dateKey];
+        }).length;
+      }, 0);
+
+      const percentage = Math.round((totalCompleted / totalPossible) * 100);
+      
+      return {
+        name: `Week ${index + 1}`,
+        percentage: percentage,
+        fill: CHART_COLORS[index % CHART_COLORS.length],
+      };
+    });
+
+    const finalData = [{ name: 'Monthly', ...weekData.reduce((acc, week) => ({...acc, [week.name]: week.percentage}), {}) }];
+    return { weekData, finalData };
+
+  }, [habits, weeksInMonth]);
   
-  const completionPercentage = totalPossibleCompletions > 0 ? (totalCompleted / totalPossibleCompletions) * 100 : 0;
+  const chartConfig = useMemo(() => {
+    if (!chartData) return {};
+    const config: any = {};
+    chartData.weekData.forEach(item => {
+        config[item.name] = {
+            label: item.name,
+            color: item.fill,
+        };
+    });
+    return config;
+  }, [chartData]);
 
-  const getProgressColor = () => {
-    if (completionPercentage === 100) return 'hsl(var(--accent))'; // green
-    if (completionPercentage >= 75) return 'hsl(var(--chart-4))'; // yellow
-    if (completionPercentage >= 50) return 'hsl(var(--destructive))'; // red
-    return 'hsl(var(--destructive))'; // Also red for < 50%
+  if (!chartData || chartData.weekData.length === 0 || habits.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-32 w-48 text-muted-foreground text-xs text-center p-4">
+        <span>No habits to track for this month.</span>
+      </div>
+    );
   }
 
-  const progressColor = getProgressColor();
-
-  const chartData = [
-    { name: 'Completed', value: completionPercentage, fill: progressColor },
-    { name: 'Remaining', value: 100 - completionPercentage, fill: 'hsl(var(--muted))' },
-  ];
-
-  const chartConfig = {};
-
   return (
-    <div className="relative h-14 w-14 flex items-center justify-center">
+    <div className="relative h-32 w-48 flex items-center justify-center">
       <ChartContainer
         config={chartConfig}
-        className="mx-auto aspect-square h-full"
+        className="mx-auto aspect-auto h-full w-full"
       >
-        <PieChart>
-          <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel hideIndicator />} />
-          <Pie
-            data={chartData}
-            dataKey="value"
-            nameKey="name"
-            innerRadius={18}
-            outerRadius={24}
-            paddingAngle={2}
-            stroke="none"
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.fill} className="outline-none" />
-            ))}
-          </Pie>
-        </PieChart>
+        <RadialBarChart
+          data={chartData.finalData}
+          innerRadius="15%"
+          outerRadius="105%"
+          startAngle={90}
+          endAngle={-270}
+          barSize={8}
+        >
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent formatter={(value, name) => [`${value}%`, name as string]} hideLabel />}
+          />
+          {chartData.weekData.map(week => (
+             <RadialBar key={week.name} dataKey={week.name} background={{ fill: 'hsl(var(--muted))', opacity: 0.3 }} fill={week.fill} />
+          ))}
+          <ChartLegend content={<ChartLegendContent nameKey="name" />} />
+        </RadialBarChart>
       </ChartContainer>
-       <div className="absolute flex items-center justify-center inset-0">
-        <span className="text-base font-bold" style={{ color: progressColor }}>{Math.round(completionPercentage)}%</span>
-      </div>
     </div>
   );
 }

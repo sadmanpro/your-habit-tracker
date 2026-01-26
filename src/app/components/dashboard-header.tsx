@@ -6,6 +6,7 @@ import WeeklyProgressChart from './weekly-progress-chart';
 import { getFormattedDate } from '@/lib/date-utils';
 import { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 type DashboardHeaderProps = {
   habits: Habit[];
@@ -21,22 +22,25 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
 
   return (
     <Card>
-      <CardContent className="p-4 sm:p-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
-        <div className="flex items-center gap-4">
+      <CardContent className="p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-4 self-start md:self-center">
           <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
           <div>
             <p className="text-xs sm:text-sm text-muted-foreground">Today</p>
             <p className="text-sm sm:text-xl font-bold text-primary">{formattedDate}</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-center gap-1">
+        
+        <Separator orientation="vertical" className="h-24 hidden md:block" />
+
+        <div className="flex flex-wrap items-start justify-center md:justify-around gap-x-8 gap-y-4 flex-1 w-full">
+          <div className="flex flex-col items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">Weekly Breakdown</h3>
             <WeeklyProgressChart habits={habits} currentDate={currentDate} />
-            <p className="text-xs sm:text-sm text-muted-foreground">Weekly Progress</p>
           </div>
-          <div className="flex flex-col items-center gap-1">
+          <div className="flex flex-col items-center gap-2">
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">Monthly Breakdown</h3>
             <MonthlyProgressChart habits={habits} currentDate={currentDate} />
-            <p className="text-xs sm:text-sm text-muted-foreground">Monthly Progress</p>
           </div>
         </div>
       </CardContent>
