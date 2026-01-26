@@ -20,17 +20,18 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
 
   return (
     <Card>
-      <CardContent className="p-6 flex items-center justify-between">
+      <CardContent className="p-4 sm:p-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
         <div className="flex items-center gap-4">
-          <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
+          <Calendar className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground" />
           <div>
             <p className="text-xs sm:text-sm text-muted-foreground">Today</p>
-            <p className="text-lg sm:text-2xl font-bold text-primary">{formattedDate}</p>
+            <p className="text-base sm:text-xl font-bold text-primary">{formattedDate}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <div className="text-right">
-            <p className="text-xs sm:text-sm text-muted-foreground">Monthly Progress</p>
+            <p className="text-xs sm:text-sm text-muted-foreground">Monthly</p>
+            <p className="text-xs sm:text-sm text-muted-foreground -mt-1">Progress</p>
           </div>
           <MonthlyProgressChart habits={habits} currentDate={currentDate} />
         </div>

@@ -120,13 +120,14 @@ export default function HabitTracker() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <header className="flex justify-between items-center">
+        <header className="flex flex-wrap gap-4 justify-between items-center">
           <div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">Verdant Habits</h1>
             <p className="text-muted-foreground">Cultivate consistency, one day at a time.</p>
           </div>
-          <Button onClick={handleOpenAddDialog}>
-            <PlusCircle className="mr-2 h-4 w-4" /> Add Habit
+          <Button onClick={handleOpenAddDialog} size="sm" className="sm:size-auto">
+            <PlusCircle className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Add Habit</span>
           </Button>
         </header>
 
