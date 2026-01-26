@@ -5,7 +5,6 @@ import type { Habit } from '@/lib/habits-data';
 import { INITIAL_HABITS } from '@/lib/habits-data';
 import DashboardHeader from './dashboard-header';
 import TrendAnalysisChart from './trend-analysis-chart';
-import RewardSection from './reward-section';
 import HabitGrid from './habit-grid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -70,8 +69,7 @@ export default function HabitTracker() {
                     <Skeleton className="h-36" />
                     <Skeleton className="md:col-span-2 h-36" />
                 </div>
-                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <Skeleton className="lg:col-span-2 h-80" />
+                 <div className="grid grid-cols-1 gap-6">
                     <Skeleton className="h-80" />
                 </div>
                 <Skeleton className="h-96" />
@@ -90,8 +88,8 @@ export default function HabitTracker() {
 
         <DashboardHeader habits={habits} currentDate={currentDate} />
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
+        <div className="grid grid-cols-1 gap-6">
+          <Card>
             <CardHeader>
                 <CardTitle>Monthly Trend</CardTitle>
             </CardHeader>
@@ -99,7 +97,6 @@ export default function HabitTracker() {
               <TrendAnalysisChart habits={habits} currentDate={currentDate} />
             </CardContent>
           </Card>
-          <RewardSection habits={habits} currentDate={currentDate} />
         </div>
         
         <HabitGrid habits={habits} currentDate={currentDate} onHabitChange={handleHabitChange} />
