@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import type { Habit } from '@/lib/habits-data';
-import { INITIAL_HABITS } from '@/lib/habits-data';
 import DashboardHeader from './dashboard-header';
 import TrendAnalysisChart from './trend-analysis-chart';
 import HabitGrid from './habit-grid';
@@ -12,57 +11,43 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from './theme-toggle';
 import { Button } from '@/components/ui/button';
-import { User } from 'lucide-react';
-
-const HABIT_STORAGE_KEY = 'verdant-habits-data';
+import { LogOut, User } from 'lucide-react';
+import {
+  useUser,
+  useFirestore,
+  useAuth,
+  useCollection,
+  useMemoFirebase,
+  addDocumentNonBlocking,
+  updateDocumentNonBlocking,
+  deleteDocumentNonBlocking,
+} from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth';
 
 export default function HabitTracker() {
-  const [habits, setHabits] = useState<Habit[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [loading, setLoading] = useState(true);
   const [isAddEditDialogOpen, setIsAddEditDialogOpen] = useState(false);
   const [habitToEdit, setHabitToEdit] = useState<Habit | null>(null);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
 
-  useEffect(() => {
-    try {
-      const storedHabits = localStorage.getItem(HABIT_STORAGE_KEY);
-      if (storedHabits) {
-        setHabits(JSON.parse(storedHabits));
-      } else {
-        setHabits(INITIAL_HABITS);
-      }
-    } catch (error) {
-      console.error("Failed to load habits from local storage", error);
-      setHabits(INITIAL_HABITS);
-    }
-    setLoading(false);
-  }, []);
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+  const auth = useAuth();
 
-  useEffect(() => {
-    if (!loading) {
-      try {
-        localStorage.setItem(HABIT_STORAGE_KEY, JSON.stringify(habits));
-      } catch (error) {
-        console.error("Failed to save habits to local storage", error);
-      }
-    }
-  }, [habits, loading]);
+  const habitsQuery = useMemoFirebase(
+    () => (user ? collection(firestore, 'users', user.uid, 'habits') : null),
+    [firestore, user]
+  );
+  const { data: habits, isLoading: habitsLoading } = useCollection<Habit>(habitsQuery);
+
+  const loading = isUserLoading || habitsLoading;
 
   const handleHabitChange = (habitId: string, date: string, checked: boolean) => {
-    setHabits(prevHabits =>
-      prevHabits.map(habit =>
-        habit.id === habitId
-          ? {
-              ...habit,
-              completions: {
-                ...habit.completions,
-                [date]: checked,
-              },
-            }
-          : habit
-      )
-    );
+    if (!user) return;
+    const habitRef = doc(firestore, 'users', user.uid, 'habits', habitId);
+    // Firestore's dot notation is used to update a field within a map.
+    updateDocumentNonBlocking(habitRef, { [`completions.${date}`]: checked });
   };
   
   const handleOpenAddDialog = () => {
@@ -76,26 +61,33 @@ export default function HabitTracker() {
   };
 
   const handleDeleteHabit = (habitId: string) => {
-    setHabits(prevHabits => prevHabits.filter(habit => habit.id !== habitId));
+    if (!user) return;
+    const habitRef = doc(firestore, 'users', user.uid, 'habits', habitId);
+    deleteDocumentNonBlocking(habitRef);
   };
 
-  const handleSaveHabit = (habitData: Omit<Habit, 'id' | 'completions'> & { id?: string }) => {
+  const handleSaveHabit = (habitData: Omit<Habit, 'id' | 'completions' | 'userId' | 'createdAt'> & { id?: string }) => {
+    if (!user) return;
+    const habitsCol = collection(firestore, 'users', user.uid, 'habits');
+
     if (habitData.id) {
       // Update existing habit
-      setHabits(prevHabits =>
-        prevHabits.map(habit =>
-          habit.id === habitData.id ? { ...habit, name: habitData.name } : habit
-        )
-      );
+      const habitRef = doc(firestore, 'users', user.uid, 'habits', habitData.id);
+      updateDocumentNonBlocking(habitRef, { name: habitData.name });
     } else {
       // Add new habit
-      const newHabit: Habit = {
-        id: new Date().toISOString(), // Simple unique ID
+      const newHabit = {
         name: habitData.name,
+        userId: user.uid,
+        createdAt: new Date().toISOString(),
         completions: {},
       };
-      setHabits(prevHabits => [...prevHabits, newHabit]);
+      addDocumentNonBlocking(habitsCol, newHabit);
     }
+  };
+
+  const handleSignOut = async () => {
+    await signOut(auth);
   };
 
 
@@ -131,15 +123,22 @@ export default function HabitTracker() {
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
-              <Button variant="outline" size="icon" onClick={() => setIsAuthDialogOpen(true)}>
-                <User className="h-6 w-6" />
-                <span className="sr-only">Open profile</span>
-              </Button>
+              {user ? (
+                 <Button variant="outline" size="icon" onClick={handleSignOut}>
+                    <LogOut className="h-6 w-6" />
+                    <span className="sr-only">Sign Out</span>
+                </Button>
+              ) : (
+                <Button variant="outline" size="icon" onClick={() => setIsAuthDialogOpen(true)}>
+                    <User className="h-6 w-6" />
+                    <span className="sr-only">Open profile</span>
+                </Button>
+              )}
             </div>
           </div>
         </header>
 
-        <DashboardHeader habits={habits} currentDate={currentDate} />
+        <DashboardHeader habits={habits || []} currentDate={currentDate} />
         
         <div className="grid grid-cols-1 gap-6">
           <Card>
@@ -147,13 +146,13 @@ export default function HabitTracker() {
                 <CardTitle className="text-xl sm:text-2xl">Monthly Trend</CardTitle>
             </CardHeader>
             <CardContent className="pl-2 pr-6">
-              <TrendAnalysisChart habits={habits} currentDate={currentDate} />
+              <TrendAnalysisChart habits={habits || []} currentDate={currentDate} />
             </CardContent>
           </Card>
         </div>
         
         <HabitGrid 
-          habits={habits} 
+          habits={habits || []} 
           currentDate={currentDate} 
           onHabitChange={handleHabitChange}
           onEditHabit={handleOpenEditDialog}
@@ -167,7 +166,7 @@ export default function HabitTracker() {
         onSave={handleSaveHabit}
         habitToEdit={habitToEdit}
       />
-      <AuthDialog isOpen={isAuthDialogOpen} onClose={() => setIsAuthDialogOpen(false)} />
+      {!user && <AuthDialog isOpen={isAuthDialogOpen} onClose={() => setIsAuthDialogOpen(false)} />}
     </div>
   );
 }

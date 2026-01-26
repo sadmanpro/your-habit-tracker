@@ -55,45 +55,21 @@
           "type": "string",
           "description": "Timestamp indicating when the habit was created.",
           "format": "date-time"
+        },
+        "completions": {
+          "type": "object",
+          "description": "A map of completion dates to a boolean status.",
+          "additionalProperties": {
+            "type": "boolean"
+          }
         }
       },
       "required": [
         "id",
         "userId",
         "name",
-        "createdAt"
-      ]
-    },
-    "HabitCompletion": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "HabitCompletion",
-      "type": "object",
-      "description": "Represents the completion status of a habit on a specific date.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the habit completion record.",
-          "format": "uuid"
-        },
-        "habitId": {
-          "type": "string",
-          "description": "Reference to Habit. (Relationship: Habit 1:N HabitCompletion)"
-        },
-        "completionDate": {
-          "type": "string",
-          "description": "The date for which the completion status is recorded.",
-          "format": "date"
-        },
-        "isCompleted": {
-          "type": "boolean",
-          "description": "Indicates whether the habit was completed on the specified date."
-        }
-      },
-      "required": [
-        "id",
-        "habitId",
-        "completionDate",
-        "isCompleted"
+        "createdAt",
+        "completions"
       ]
     }
   },
@@ -140,32 +116,8 @@
             }
           ]
         }
-      },
-      {
-        "path": "/users/{userId}/habits/{habitId}/completions/{completionId}",
-        "definition": {
-          "entityName": "HabitCompletion",
-          "schema": {
-            "$ref": "#/backend/entities/HabitCompletion"
-          },
-          "description": "Stores habit completion records for a specific habit of a specific user. This subcollection is path-based and owned by the user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The unique identifier of the user."
-            },
-            {
-              "name": "habitId",
-              "description": "The unique identifier of the habit."
-            },
-            {
-              "name": "completionId",
-              "description": "The unique identifier of the habit completion record."
-            }
-          ]
-        }
       }
     ],
-    "reasoning": "The Firestore structure is designed to optimize for the application's focus on user-specific habit tracking and progress visualization. By structuring data under user-specific collections, we ensure data isolation and efficient querying. The structure prioritizes path-based ownership and avoids complex authorization logic, making security rules simpler and more robust.\n\n*   `/users/{userId}`: Stores user profiles.\n*   `/users/{userId}/habits/{habitId}`: Stores habits owned by a specific user.\n*   `/users/{userId}/habits/{habitId}/completions/{completionId}`: Stores completion records for each habit, nested under the habit document.\n\n**Authorization Independence (CRITICAL):**\n\nThis design inherently supports Authorization Independence. Because habits and their completion records are nested under the user's document, access control can be easily enforced based on the authenticated user ID (`request.auth.uid`). No `get()` calls are needed to verify ownership, as the path itself establishes the relationship.\n\n**QAPs (Rules are not Filters):**\n\nThe chosen structure facilitates secure `list` operations because all documents within a collection share the same security requirements. For example, listing habits under `/users/{userId}/habits` only requires verifying that `request.auth.uid == userId`. This structure avoids the need to filter based on document content, ensuring QAPs are met."
+    "reasoning": "The Firestore structure is designed to optimize for the application's focus on user-specific habit tracking and progress visualization. By structuring data under user-specific collections, we ensure data isolation and efficient querying. The structure prioritizes path-based ownership and avoids complex authorization logic, making security rules simpler and more robust.\n\n*   `/users/{userId}`: Stores user profiles.\n*   `/users/{userId}/habits/{habitId}`: Stores habits owned by a specific user, with completions stored as a map on the habit document for efficient retrieval.\n\n**Authorization Independence (CRITICAL):**\n\nThis design inherently supports Authorization Independence. Because habits are nested under the user's document, access control can be easily enforced based on the authenticated user ID (`request.auth.uid`). No `get()` calls are needed to verify ownership, as the path itself establishes the relationship.\n\n**QAPs (Rules are not Filters):**\n\nThe chosen structure facilitates secure `list` operations because all documents within a collection share the same security requirements. For example, listing habits under `/users/{userId}/habits` only requires verifying that `request.auth.uid == userId`. This structure avoids the need to filter based on document content, ensuring QAPs are met."
   }
 }

@@ -9,7 +9,7 @@ service cloud.firestore {
      * and users cannot see or interact with the data of others.
      *
      * Data Structure: All application data is nested under the top-level `users`
-     * collection. The hierarchy is `/users/{userId}/habits/{habitId}/completions/{completionId}`.
+     * collection. The hierarchy is `/users/{userId}/habits/{habitId}`.
      * This path-based structure is the primary mechanism for enforcing security.
      *
      * Key Security Decisions:
@@ -20,7 +20,7 @@ service cloud.firestore {
      * - No User Listing: It is not possible to query the top-level `/users` collection
      *   to get a list of all application users.
      * - Immutability of Ownership: Once a document is created, its core relational
-     *   links (e.g., `userId`, `habitId`) cannot be changed. This prevents a user
+     *   links (e.g., `userId`) cannot be changed. This prevents a user
      *   from re-assigning their own data to another user or another parent document.
      */
 
@@ -81,21 +81,6 @@ service cloud.firestore {
       return request.resource.data.userId == resource.data.userId;
     }
 
-    /**
-     * On create, validates that the new completion record's `habitId` field
-     * correctly points back to the parent habit specified in the path.
-     */
-    function isValidCompletionOnCreate(habitId) {
-      return request.resource.data.habitId == habitId;
-    }
-
-    /**
-     * On update, ensures the completion record's `habitId` field is immutable.
-     */
-    function isCompletionImmutableOnUpdate() {
-      return request.resource.data.habitId == resource.data.habitId;
-    }
-
     // =====================================================================
     // Collection Rules
     // =====================================================================
@@ -130,22 +115,6 @@ service cloud.firestore {
         allow create: if isOwner(userId) && isValidHabitOnCreate(userId);
         allow update: if isExistingOwner(userId) && isHabitImmutableOnUpdate();
         allow delete: if isExistingOwner(userId);
-
-        /**
-         * @description Manages completion records for a specific habit.
-         * @path /users/{userId}/habits/{habitId}/completions/{completionId}
-         * @allow (create) A user marks their own habit as complete: `auth.uid == 'user_abc'`, `create /users/user_abc/habits/habit_123/completions/comp_456`
-         * @allow (list) A user lists all completions for one of their habits: `auth.uid == 'user_abc'`, `list /users/user_abc/habits/habit_123/completions`
-         * @deny (get) A user tries to read a completion record for another user's habit: `auth.uid == 'user_xyz'`, `get /users/user_abc/habits/habit_123/completions/comp_456`
-         * @deny (delete) A user tries to delete another user's completion record: `auth.uid == 'user_xyz'`, `delete /users/user_abc/habits/habit_123/completions/comp_456`
-         * @principle Extends the parent document's ownership rules to this nested subcollection, ensuring data remains private to the user.
-         */
-        match /completions/{completionId} {
-          allow get, list: if isOwner(userId);
-          allow create: if isOwner(userId) && isValidCompletionOnCreate(habitId);
-          allow update: if isExistingOwner(userId) && isCompletionImmutableOnUpdate();
-          allow delete: if isExistingOwner(userId);
-        }
       }
     }
   }
