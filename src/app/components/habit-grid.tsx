@@ -131,12 +131,15 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                               week.map(day => {
                                   const dayKey = formatDateKey(day);
                                   return (
-                                  <td key={dayKey} className={cn("p-2 text-center border-l", getDayColumnStyle(day))}>
+                                  <td
+                                    key={dayKey}
+                                    className={cn("p-2 text-center border-l cursor-pointer", getDayColumnStyle(day))}
+                                    onClick={() => onHabitChange(habit.id, dayKey, !habit.completions[dayKey])}
+                                  >
                                       <Checkbox
                                           checked={!!habit.completions[dayKey]}
-                                          onCheckedChange={(checked) => onHabitChange(habit.id, dayKey, !!checked)}
                                           aria-label={`Mark ${habit.name} for ${format(day, 'MMMM do')}`}
-                                          className="w-3 h-3 sm:w-4 sm:h-4 mx-auto rounded-sm transition-all duration-300 data-[state=checked]:scale-110"
+                                          className="w-3 h-3 sm:w-4 sm:h-4 mx-auto rounded-sm transition-all duration-300 data-[state=checked]:scale-110 pointer-events-none"
                                       />
                                   </td>
                                   );
