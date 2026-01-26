@@ -56,6 +56,33 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+  .pookie {
+    --background: 50 83% 95%;
+    --foreground: 240 10% 3.9%;
+    --card: 50 83% 95%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 50 83% 95%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 174 41% 80%;
+    --primary-foreground: 240 10% 3.9%;
+    --secondary: 0 100% 87%;
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 0 100% 92%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 0 100% 82%;
+    --accent-foreground: 240 10% 3.9%;
+    --destructive: 0 100% 82%;
+    --destructive-foreground: 240 10% 3.9%;
+    --border: 0 100% 90%;
+    --input: 0 100% 90%;
+    --ring: 174 41% 80%;
+    --chart-1: 174 41% 80%;
+    --chart-2: 0 100% 82%;
+    --chart-3: 0 100% 87%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
 }
 
 @layer base {
