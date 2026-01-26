@@ -4,7 +4,7 @@ import type { Habit } from '@/lib/habits-data';
 import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card } from '@/components/ui/card';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, PlusCircle } from 'lucide-react';
 import { format, isToday } from 'date-fns';
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 type HabitGridProps = {
   habits: Habit[];
@@ -30,9 +31,10 @@ type HabitGridProps = {
   onHabitChange: (habitId: string, date: string, checked: boolean) => void;
   onEditHabit: (habit: Habit) => void;
   onDeleteHabit: (habitId: string) => void;
+  onAddHabit: () => void;
 };
 
-export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHabit, onDeleteHabit }: HabitGridProps) {
+export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHabit, onDeleteHabit, onAddHabit }: HabitGridProps) {
   const [deleteAlert, setDeleteAlert] = useState<{ isOpen: boolean; habitId: string | null }>({
     isOpen: false,
     habitId: null,
@@ -75,7 +77,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <table className="min-w-full text-xs sm:text-sm border-collapse">
               <thead className="text-muted-foreground sticky top-0 z-20 bg-card">
                   <tr className="border-b">
-                      <th className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-32 md:w-48 whitespace-nowrap border-r">
+                      <th className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-28 md:w-48 whitespace-nowrap border-r text-xs sm:text-sm">
                           Habit
                       </th>
                       {weeks.map((week, index) => (
@@ -85,12 +87,17 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       ))}
                   </tr>
                   <tr className="border-b">
-                      <th className="sticky left-0 bg-card z-30 border-r"></th>
+                      <th className="sticky left-0 bg-card z-30 border-r text-center align-middle">
+                        <Button onClick={onAddHabit} variant="ghost" size="sm" className="w-full h-full text-xs sm:text-sm">
+                          <PlusCircle className="h-3 w-3 sm:mr-2" />
+                          <span className="hidden sm:inline">Add Habit</span>
+                        </Button>
+                      </th>
                       {weeks.flatMap(week =>
                           week.map(day => (
-                              <th key={formatDateKey(day)} className={cn("p-2 font-normal text-center border-l w-9 sm:w-14", getDayColumnStyle(day))}>
-                                  <div className={`text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
-                                  <div className={`text-xs sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
+                              <th key={formatDateKey(day)} className={cn("p-1 sm:p-2 font-normal text-center border-l w-9 sm:w-14", getDayColumnStyle(day))}>
+                                  <div className={`text-[0.6rem] sm:text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
+                                  <div className={`text-[0.7rem] sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
                               </th>
                           ))
                       )}
@@ -99,7 +106,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
               <tbody>
                   {habits.map((habit) => (
                       <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
-                          <td className="sticky left-0 bg-card z-10 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-32 md:w-48 border-r">
+                          <td className="sticky left-0 bg-card z-10 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-28 md:w-48 border-r">
                                <DropdownMenu>
                                   <DropdownMenuTrigger asChild>
                                       <div className="flex items-center justify-between gap-2 cursor-pointer w-full">
@@ -129,7 +136,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                                           checked={!!habit.completions[dayKey]}
                                           onCheckedChange={(checked) => onHabitChange(habit.id, dayKey, !!checked)}
                                           aria-label={`Mark ${habit.name} for ${format(day, 'MMMM do')}`}
-                                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 mx-auto rounded-sm transition-all duration-300 data-[state=checked]:scale-110"
+                                          className="w-3 h-3 sm:w-4 sm:h-4 mx-auto rounded-sm transition-all duration-300 data-[state=checked]:scale-110"
                                       />
                                   </td>
                                   );

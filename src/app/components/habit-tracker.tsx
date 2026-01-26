@@ -9,8 +9,6 @@ import HabitGrid from './habit-grid';
 import AddEditHabitDialog from './add-edit-habit-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
 
 const HABIT_STORAGE_KEY = 'verdant-habits-data';
 
@@ -120,15 +118,11 @@ export default function HabitTracker() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <header className="flex flex-wrap gap-4 justify-between items-center">
+        <header>
           <div>
-            <h1 className="text-xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">YOUR HABIT TRACKER</h1>
-            <p className="text-muted-foreground">Cultivate consistency, one day at a time.</p>
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-primary font-headline tracking-tight">YOUR HABIT TRACKER</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">Cultivate consistency, one day at a time.</p>
           </div>
-          <Button onClick={handleOpenAddDialog} size="sm" className="sm:size-auto">
-            <PlusCircle className="h-4 w-4 sm:mr-2" />
-            <span className="hidden sm:inline">Add Habit</span>
-          </Button>
         </header>
 
         <DashboardHeader habits={habits} currentDate={currentDate} />
@@ -136,7 +130,7 @@ export default function HabitTracker() {
         <div className="grid grid-cols-1 gap-6">
           <Card>
             <CardHeader>
-                <CardTitle>Monthly Trend</CardTitle>
+                <CardTitle className="text-xl sm:text-2xl">Monthly Trend</CardTitle>
             </CardHeader>
             <CardContent className="pl-2 pr-6">
               <TrendAnalysisChart habits={habits} currentDate={currentDate} />
@@ -149,7 +143,8 @@ export default function HabitTracker() {
           currentDate={currentDate} 
           onHabitChange={handleHabitChange}
           onEditHabit={handleOpenEditDialog}
-          onDeleteHabit={handleDeleteHabit} 
+          onDeleteHabit={handleDeleteHabit}
+          onAddHabit={handleOpenAddDialog} 
         />
       </div>
        <AddEditHabitDialog
