@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import type { Habit } from '@/lib/habits-data';
 import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,6 +17,7 @@ type HabitGridProps = {
 };
 
 export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHabit, onDeleteHabit }: HabitGridProps) {
+  const [activeHabitId, setActiveHabitId] = useState<string | null>(null);
   const weeks = getWeeksInMonth(currentDate);
 
   const headerStickyClass = "sticky top-0 bg-card z-20";
@@ -50,13 +52,19 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
             </thead>
             <tbody>
                 {habits.map((habit) => {
+                    const isActive = activeHabitId === habit.id;
                     return (
                         <tr key={habit.id} className="group border-b last:border-none bg-card hover:bg-muted/50 transition-colors">
                             <td className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-medium text-foreground w-20 sm:w-32 md:w-48">
                                 <div className="flex items-center justify-between gap-2">
-                                    <span className="flex-grow break-words text-xs sm:text-sm">{habit.name}</span>
-                                    <div className="flex shrink-0 items-center opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">
-                                        <Button variant="ghost" className="h-5 w-5 p-0.5" onClick={() => onEditHabit(habit)}>
+                                    <span
+                                        className="flex-grow break-words text-xs sm:text-sm cursor-pointer"
+                                        onClick={() => setActiveHabitId(isActive ? null : habit.id)}
+                                    >
+                                        {habit.name}
+                                    </span>
+                                    <div className={`flex shrink-0 items-center transition-opacity ${isActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                                        <Button variant="ghost" className="h-5 w-5 p-0.5" onClick={() => { onEditHabit(habit); setActiveHabitId(null); }}>
                                             <span className="sr-only">Edit habit</span>
                                             <Edit className="h-3 w-3" />
                                         </Button>
