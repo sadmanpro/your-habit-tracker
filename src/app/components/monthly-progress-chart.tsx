@@ -1,6 +1,6 @@
 'use client';
 
-import { RadialBar, RadialBarChart } from 'recharts';
+import { Pie, PieChart, Cell } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
@@ -9,7 +9,7 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
-import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
+import { getDaysInMonth, formatDateKey } from '@/lib/date-utils';
 import { useMemo } from 'react';
 
 type MonthlyProgressChartProps = {
@@ -26,42 +26,30 @@ const CHART_COLORS = [
 ];
 
 export default function MonthlyProgressChart({ habits, currentDate }: MonthlyProgressChartProps) {
-  const weeksInMonth = useMemo(() => getWeeksInMonth(currentDate), [currentDate]);
+  const daysInMonth = useMemo(() => getDaysInMonth(currentDate), [currentDate]);
 
   const chartData = useMemo(() => {
-    if (!habits || habits.length === 0) return null;
-
-    const weekData = weeksInMonth.map((week, index) => {
-      const totalPossible = habits.length * week.length;
-      if (totalPossible === 0) {
-        return { name: `Week ${index + 1}`, percentage: 0, fill: CHART_COLORS[index % CHART_COLORS.length] };
-      }
-      
-      const totalCompleted = habits.reduce((acc, habit) => {
-        return acc + week.filter(day => {
-          const dateKey = formatDateKey(day);
-          return !!habit.completions[dateKey];
-        }).length;
-      }, 0);
-
-      const percentage = Math.round((totalCompleted / totalPossible) * 100);
+    if (!habits || habits.length === 0) return [];
+    
+    return habits.map((habit, index) => {
+      const completedCount = daysInMonth.filter(day => {
+        const dateKey = formatDateKey(day);
+        return !!habit.completions[dateKey];
+      }).length;
       
       return {
-        name: `Week ${index + 1}`,
-        percentage: percentage,
+        id: habit.id,
+        name: habit.name,
+        completions: completedCount,
         fill: CHART_COLORS[index % CHART_COLORS.length],
       };
-    });
+    }).filter(item => item.completions > 0);
+  }, [habits, daysInMonth]);
 
-    const finalData = [{ name: 'Monthly', ...weekData.reduce((acc, week) => ({...acc, [week.name]: week.percentage}), {}) }];
-    return { weekData, finalData };
-
-  }, [habits, weeksInMonth]);
-  
   const chartConfig = useMemo(() => {
     if (!chartData) return {};
     const config: any = {};
-    chartData.weekData.forEach(item => {
+    chartData.forEach(item => {
         config[item.name] = {
             label: item.name,
             color: item.fill,
@@ -70,11 +58,12 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
     return config;
   }, [chartData]);
 
-  if (!chartData || chartData.weekData.length === 0 || habits.length === 0) {
+
+  if (chartData.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-48 w-72 text-muted-foreground text-xs text-center p-4">
-        <span>No habits to track for this month.</span>
-      </div>
+        <div className="flex flex-col items-center justify-center h-48 w-72 text-muted-foreground text-xs text-center p-4">
+            <span>No progress to show for this month.</span>
+        </div>
     );
   }
 
@@ -84,23 +73,23 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
         config={chartConfig}
         className="mx-auto aspect-auto h-full w-full"
       >
-        <RadialBarChart
-          data={chartData.finalData}
-          innerRadius="20%"
-          outerRadius="100%"
-          startAngle={90}
-          endAngle={-270}
-          barSize={10}
-        >
-          <ChartTooltip
-            cursor={false}
-            content={<ChartTooltipContent formatter={(value, name) => [`${value}%`, name as string]} hideLabel />}
-          />
-          {chartData.weekData.map(week => (
-             <RadialBar key={week.name} dataKey={week.name} background={{ fill: 'hsl(var(--muted))', opacity: 0.3 }} fill={week.fill} />
-          ))}
-          <ChartLegend content={<ChartLegendContent nameKey="name" />} />
-        </RadialBarChart>
+        <PieChart>
+          <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
+          <Pie
+            data={chartData}
+            dataKey="completions"
+            nameKey="name"
+            innerRadius={60}
+            outerRadius={80}
+            paddingAngle={2}
+            stroke="none"
+          >
+            {chartData.map((entry) => (
+              <Cell key={`cell-${entry.id}`} fill={entry.fill} className="outline-none" />
+            ))}
+          </Pie>
+          <ChartLegend content={<ChartLegendContent nameKey="name" layout="vertical" align="right" verticalAlign="middle" />} />
+        </PieChart>
       </ChartContainer>
     </div>
   );
