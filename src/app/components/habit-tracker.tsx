@@ -6,8 +6,11 @@ import { INITIAL_HABITS } from '@/lib/habits-data';
 import DashboardHeader from './dashboard-header';
 import TrendAnalysisChart from './trend-analysis-chart';
 import HabitGrid from './habit-grid';
+import AddEditHabitDialog from './add-edit-habit-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
 
 const HABIT_STORAGE_KEY = 'verdant-habits-data';
 
@@ -15,6 +18,8 @@ export default function HabitTracker() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [habitToEdit, setHabitToEdit] = useState<Habit | null>(null);
 
   useEffect(() => {
     try {
@@ -57,6 +62,40 @@ export default function HabitTracker() {
     );
   };
   
+  const handleOpenAddDialog = () => {
+    setHabitToEdit(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleOpenEditDialog = (habit: Habit) => {
+    setHabitToEdit(habit);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteHabit = (habitId: string) => {
+    setHabits(prevHabits => prevHabits.filter(habit => habit.id !== habitId));
+  };
+
+  const handleSaveHabit = (habitData: Omit<Habit, 'id' | 'completions'> & { id?: string }) => {
+    if (habitData.id) {
+      // Update existing habit
+      setHabits(prevHabits =>
+        prevHabits.map(habit =>
+          habit.id === habitData.id ? { ...habit, name: habitData.name } : habit
+        )
+      );
+    } else {
+      // Add new habit
+      const newHabit: Habit = {
+        id: new Date().toISOString(), // Simple unique ID
+        name: habitData.name,
+        completions: {},
+      };
+      setHabits(prevHabits => [...prevHabits, newHabit]);
+    }
+  };
+
+
   if (loading) {
     return (
         <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
@@ -81,9 +120,14 @@ export default function HabitTracker() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        <header>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-primary font-headline tracking-tight">Verdant Habits</h1>
-          <p className="text-muted-foreground">Cultivate consistency, one day at a time.</p>
+        <header className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-primary font-headline tracking-tight">Verdant Habits</h1>
+            <p className="text-muted-foreground">Cultivate consistency, one day at a time.</p>
+          </div>
+          <Button onClick={handleOpenAddDialog}>
+            <PlusCircle className="mr-2 h-4 w-4" /> Add Habit
+          </Button>
         </header>
 
         <DashboardHeader habits={habits} currentDate={currentDate} />
@@ -99,8 +143,20 @@ export default function HabitTracker() {
           </Card>
         </div>
         
-        <HabitGrid habits={habits} currentDate={currentDate} onHabitChange={handleHabitChange} />
+        <HabitGrid 
+          habits={habits} 
+          currentDate={currentDate} 
+          onHabitChange={handleHabitChange}
+          onEditHabit={handleOpenEditDialog}
+          onDeleteHabit={handleDeleteHabit} 
+        />
       </div>
+       <AddEditHabitDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSave={handleSaveHabit}
+        habitToEdit={habitToEdit}
+      />
     </div>
   );
 }
