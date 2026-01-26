@@ -72,25 +72,25 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
 
   if (!chartData || chartData.weekData.length === 0 || habits.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-32 w-48 text-muted-foreground text-xs text-center p-4">
+      <div className="flex flex-col items-center justify-center h-48 w-72 text-muted-foreground text-xs text-center p-4">
         <span>No habits to track for this month.</span>
       </div>
     );
   }
 
   return (
-    <div className="relative h-32 w-48 flex items-center justify-center">
+    <div className="relative h-48 w-72 flex items-center justify-center">
       <ChartContainer
         config={chartConfig}
         className="mx-auto aspect-auto h-full w-full"
       >
         <RadialBarChart
           data={chartData.finalData}
-          innerRadius="15%"
-          outerRadius="105%"
+          innerRadius="20%"
+          outerRadius="100%"
           startAngle={90}
           endAngle={-270}
-          barSize={8}
+          barSize={10}
         >
           <ChartTooltip
             cursor={false}

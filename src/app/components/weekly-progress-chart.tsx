@@ -60,14 +60,14 @@ export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgr
 
   if (chartData.length === 0) {
     return (
-        <div className="flex flex-col items-center justify-center h-32 w-48 text-muted-foreground text-xs text-center p-4">
+        <div className="flex flex-col items-center justify-center h-48 w-72 text-muted-foreground text-xs text-center p-4">
             <span>No progress to show for this week.</span>
         </div>
     );
   }
 
   return (
-    <div className="relative h-32 w-48 flex items-center justify-center">
+    <div className="relative h-48 w-72 flex items-center justify-center">
       <ChartContainer
         config={chartConfig}
         className="mx-auto aspect-auto h-full w-full"
@@ -78,8 +78,8 @@ export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgr
             data={chartData}
             dataKey="completions"
             nameKey="name"
-            innerRadius={40}
-            outerRadius={60}
+            innerRadius={60}
+            outerRadius={80}
             paddingAngle={2}
             stroke="none"
           >
