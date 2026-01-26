@@ -1,6 +1,6 @@
 'use client';
 import type { Habit } from '@/lib/habits-data';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import MonthlyProgressChart from './monthly-progress-chart';
 import { getFormattedDate } from '@/lib/date-utils';
 import { useState, useEffect } from 'react';
@@ -19,24 +19,22 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
   }, [currentDate]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm font-medium">Today's Date</CardTitle>
-          <Calendar className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <p className="text-xl sm:text-2xl font-bold text-primary">{formattedDate}</p>
-        </CardContent>
-      </Card>
-      <Card className="md:col-span-2">
-        <CardHeader>
-          <CardTitle>Monthly Progress</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <Card>
+      <CardContent className="p-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
+          <div>
+            <p className="text-xs sm:text-sm text-muted-foreground">Today</p>
+            <p className="text-base sm:text-xl font-bold text-primary">{formattedDate}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="text-right">
+            <p className="text-xs sm:text-sm text-muted-foreground">Monthly Progress</p>
+          </div>
           <MonthlyProgressChart habits={habits} currentDate={currentDate} />
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

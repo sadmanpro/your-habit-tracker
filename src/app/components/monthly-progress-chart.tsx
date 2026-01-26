@@ -38,7 +38,7 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
   const chartConfig = {};
 
   return (
-    <div className="relative h-24 flex items-center justify-center">
+    <div className="relative h-16 w-16 flex items-center justify-center">
       <ChartContainer
         config={chartConfig}
         className="mx-auto aspect-square h-full"
@@ -49,9 +49,9 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
             data={chartData}
             dataKey="value"
             nameKey="name"
-            innerRadius={30}
-            outerRadius={40}
-            paddingAngle={5}
+            innerRadius={20}
+            outerRadius={28}
+            paddingAngle={2}
             stroke="none"
           >
             {chartData.map((entry, index) => (
@@ -61,7 +61,7 @@ export default function MonthlyProgressChart({ habits, currentDate }: MonthlyPro
         </PieChart>
       </ChartContainer>
        <div className="absolute flex items-center justify-center inset-0">
-        <span className="text-xl sm:text-2xl font-bold text-accent">{Math.round(completionPercentage)}%</span>
+        <span className="text-lg font-bold text-accent">{Math.round(completionPercentage)}%</span>
       </div>
     </div>
   );
