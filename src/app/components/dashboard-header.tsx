@@ -28,12 +28,9 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
             <p className="text-sm sm:text-xl font-bold text-primary">{formattedDate}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="text-right">
-            <p className="text-xs sm:text-sm text-muted-foreground">Monthly</p>
-            <p className="text-xs sm:text-sm text-muted-foreground -mt-1">Progress</p>
-          </div>
+        <div className="flex flex-col items-center gap-1">
           <MonthlyProgressChart habits={habits} currentDate={currentDate} />
+          <p className="text-xs sm:text-sm text-muted-foreground">Monthly Progress</p>
         </div>
       </CardContent>
     </Card>
