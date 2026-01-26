@@ -39,7 +39,7 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
   };
 
   return (
-    <div className="h-64 w-full">
+    <div className="h-48 w-full">
       <ChartContainer config={chartConfig} className="h-full w-full">
         <AreaChart
           data={chartData}
