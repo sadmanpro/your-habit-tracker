@@ -4,11 +4,19 @@ import {
   startOfMonth,
   format,
   getWeek,
+  startOfWeek,
+  endOfWeek,
 } from 'date-fns';
 
 export const getDaysInMonth = (date: Date) => {
   const start = startOfMonth(date);
   const end = endOfMonth(date);
+  return eachDayOfInterval({ start, end });
+};
+
+export const getDaysInCurrentWeek = (date: Date) => {
+  const start = startOfWeek(date, { weekStartsOn: 1 });
+  const end = endOfWeek(date, { weekStartsOn: 1 });
   return eachDayOfInterval({ start, end });
 };
 

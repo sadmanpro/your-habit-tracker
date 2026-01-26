@@ -7,19 +7,19 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import type { Habit } from '@/lib/habits-data';
-import { getDaysInMonth, formatDateKey } from '@/lib/date-utils';
+import { getDaysInCurrentWeek, formatDateKey } from '@/lib/date-utils';
 
-type MonthlyProgressChartProps = {
+type WeeklyProgressChartProps = {
   habits: Habit[];
   currentDate: Date;
 };
 
-export default function MonthlyProgressChart({ habits, currentDate }: MonthlyProgressChartProps) {
-  const daysInMonth = getDaysInMonth(currentDate);
-  const totalPossibleCompletions = habits.length * daysInMonth.length;
+export default function WeeklyProgressChart({ habits, currentDate }: WeeklyProgressChartProps) {
+  const daysInWeek = getDaysInCurrentWeek(currentDate);
+  const totalPossibleCompletions = habits.length * daysInWeek.length;
 
   const totalCompleted = habits.reduce((acc, habit) => {
-    return acc + daysInMonth.filter(day => {
+    return acc + daysInWeek.filter(day => {
         const dateKey = formatDateKey(day);
         return !!habit.completions[dateKey];
     }).length;

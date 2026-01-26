@@ -2,6 +2,7 @@
 import type { Habit } from '@/lib/habits-data';
 import { Card, CardContent } from '@/components/ui/card';
 import MonthlyProgressChart from './monthly-progress-chart';
+import WeeklyProgressChart from './weekly-progress-chart';
 import { getFormattedDate } from '@/lib/date-utils';
 import { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
@@ -28,9 +29,15 @@ export default function DashboardHeader({ habits, currentDate }: DashboardHeader
             <p className="text-sm sm:text-xl font-bold text-primary">{formattedDate}</p>
           </div>
         </div>
-        <div className="flex flex-col items-center gap-1">
-          <MonthlyProgressChart habits={habits} currentDate={currentDate} />
-          <p className="text-xs sm:text-sm text-muted-foreground">Monthly Progress</p>
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center gap-1">
+            <WeeklyProgressChart habits={habits} currentDate={currentDate} />
+            <p className="text-xs sm:text-sm text-muted-foreground">Weekly Progress</p>
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <MonthlyProgressChart habits={habits} currentDate={currentDate} />
+            <p className="text-xs sm:text-sm text-muted-foreground">Monthly Progress</p>
+          </div>
         </div>
       </CardContent>
     </Card>
