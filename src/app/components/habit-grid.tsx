@@ -57,7 +57,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
 
   const getDayColumnStyle = (day: Date) => {
     if (!habits || habits.length === 0) {
-        return isToday(day) ? 'bg-primary/10' : '';
+        return isToday(day) ? 'bg-destructive/10' : '';
     }
 
     const dayKey = formatDateKey(day);
@@ -74,7 +74,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
         return 'bg-destructive/20';
     }
 
-    return isToday(day) ? 'bg-primary/10' : '';
+    return isToday(day) ? 'bg-destructive/10' : '';
   };
 
   const handleDelete = () => {
@@ -96,7 +96,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       </th>
                       {isMonthView ? (
                           weeks.map((week, weekIndex) => {
-                              const startDay = weekIndex * 7 + 1;
+                              const startDay = week.reduce((acc, _, i) => weeks.slice(0, weekIndex).reduce((sum, w) => sum + w.length, 0) + i + 1, 0);
                               const endDay = startDay + week.length - 1;
                               return (
                                 <th key={weekIndex} colSpan={week.length} className="p-2 text-center border-l font-semibold text-foreground">
@@ -136,8 +136,8 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       {displayWeeks.flatMap(week =>
                           week.map((day) => (
                               <th key={formatDateKey(day)} className={cn("p-1 sm:p-2 font-normal text-center border-l w-9 sm:w-14", getDayColumnStyle(day))}>
-                                  <div className={`text-[0.6rem] sm:text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
-                                  <div className={`text-[0.7rem] sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
+                                  <div className={`text-[0.6rem] sm:text-xs ${isToday(day) ? 'text-destructive font-bold' : ''}`}>{format(day, 'E')}</div>
+                                  <div className={`text-[0.7rem] sm:text-base font-medium ${isToday(day) ? 'text-destructive font-extrabold' : ''}`}>{format(day, 'd')}</div>
                               </th>
                           ))
                       )}
