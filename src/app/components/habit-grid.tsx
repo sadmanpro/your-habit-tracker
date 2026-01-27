@@ -1,11 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { Habit } from '@/lib/habits-data';
 import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card } from '@/components/ui/card';
-import { Edit, Trash2, PlusCircle } from 'lucide-react';
-import { format, isToday } from 'date-fns';
+import { Edit, Trash2, PlusCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { format, isToday, isSameWeek } from 'date-fns';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +24,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 type HabitGridProps = {
   habits: Habit[];
@@ -39,7 +46,14 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
     isOpen: false,
     habitId: null,
   });
+  const [isMonthView, setIsMonthView] = useState(false);
   const weeks = getWeeksInMonth(currentDate);
+
+  const currentWeek = useMemo(() => {
+    return weeks.find(week => week.some(day => isSameWeek(day, currentDate, { weekStartsOn: 1 })));
+  }, [weeks, currentDate]);
+
+  const displayWeeks = isMonthView ? weeks : (currentWeek ? [currentWeek] : []);
 
   const getDayColumnStyle = (day: Date) => {
     if (!habits || habits.length === 0) {
@@ -80,20 +94,42 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       <th className="sticky left-0 bg-card z-30 p-2 sm:p-3 font-semibold text-left text-foreground w-20 sm:w-28 md:w-48 whitespace-nowrap border-r text-xs sm:text-sm">
                           Habit
                       </th>
-                      {weeks.map((week, index) => (
-                          <th key={index} colSpan={week.length} className="p-2 text-center border-l font-semibold text-foreground">
-                              Week {index + 1}
-                          </th>
-                      ))}
+                      {isMonthView ? (
+                          weeks.map((week) => (
+                              <th key={weeks.indexOf(week)} colSpan={week.length} className="p-2 text-center border-l font-semibold text-foreground">
+                                  Week {weeks.indexOf(week) + 1}
+                              </th>
+                          ))
+                      ) : (
+                        currentWeek && <th colSpan={currentWeek.length} className="p-2 text-center border-l font-semibold text-foreground">
+                            Current Week
+                        </th>
+                      )}
                   </tr>
                   <tr className="border-b">
-                      <th className="sticky left-0 bg-card z-30 border-r text-center align-middle">
-                        <Button onClick={onAddHabit} variant="ghost" size="sm" className="w-full h-full text-xs sm:text-sm">
-                          <PlusCircle className="h-3 w-3 sm:mr-2" />
-                          <span className="hidden sm:inline">Add Habit</span>
-                        </Button>
+                      <th className="sticky left-0 bg-card z-30 border-r p-0 h-14 align-middle">
+                        <div className="flex items-center justify-center h-full">
+                          <Button onClick={onAddHabit} variant="ghost" size="sm" className="flex-1 h-full text-xs sm:text-sm rounded-none">
+                            <PlusCircle className="h-3 w-3 sm:mr-2" />
+                            <span className="hidden sm:inline">Add Habit</span>
+                          </Button>
+                          <Separator orientation="vertical" className="h-6" />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button onClick={() => setIsMonthView(v => !v)} variant="ghost" size="icon" className="h-full rounded-none w-12">
+                                  {isMonthView ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                                  <span className="sr-only">{isMonthView ? 'Collapse to week view' : 'Expand to month view'}</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{isMonthView ? 'Collapse to week view' : 'Expand to month view'}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                       </th>
-                      {weeks.flatMap(week =>
+                      {displayWeeks.flatMap(week =>
                           week.map(day => (
                               <th key={formatDateKey(day)} className={cn("p-1 sm:p-2 font-normal text-center border-l w-9 sm:w-14", getDayColumnStyle(day))}>
                                   <div className={`text-[0.6rem] sm:text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
@@ -127,7 +163,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                                   </DropdownMenuContent>
                               </DropdownMenu>
                           </td>
-                          {weeks.flatMap(week =>
+                          {displayWeeks.flatMap(week =>
                               week.map(day => {
                                   const dayKey = formatDateKey(day);
                                   return (

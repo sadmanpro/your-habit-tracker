@@ -25,8 +25,8 @@ export const getWeeksInMonth = (date: Date) => {
   const weeks: Record<number, Date[]> = {};
 
   days.forEach((day) => {
-    // Using ISO week numbering; weekStartsOn: 1 (Monday) is default for getWeek
-    const weekNumber = getWeek(day); 
+    // Using ISO week numbering; weekStartsOn: 1 (Monday)
+    const weekNumber = getWeek(day, { weekStartsOn: 1 }); 
     if (!weeks[weekNumber]) {
       weeks[weekNumber] = [];
     }
