@@ -30,6 +30,7 @@ import {
 import { collection, doc, getDoc, setDoc, query, orderBy } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 import Footer from './footer';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const defaultHabits: Habit[] = [
   {
@@ -215,48 +216,57 @@ export default function HabitTracker() {
           )}
         </header>
 
-        <div
-          className="animate-in fade-in slide-in-from-top-4 duration-500"
-          style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
-        >
-          <DashboardHeader habits={displayedHabits || []} currentDate={currentDate} />
-        </div>
-        
-        <div
-          className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-top-4 duration-500"
-          style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}
-        >
-          <Card>
-            <CardHeader>
-                <CardTitle className="text-xl sm:text-2xl">Monthly Trend</CardTitle>
-            </CardHeader>
-            <CardContent className="pl-2 pr-6">
-              <TrendAnalysisChart habits={displayedHabits || []} currentDate={currentDate} />
-            </CardContent>
-          </Card>
-        </div>
-        
-        <PomodoroTimer />
-        
-        <div
-          className="animate-in fade-in slide-in-from-top-4 duration-500"
-          style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}
-        >
-          <HabitGrid 
-            habits={displayedHabits || []} 
-            currentDate={currentDate} 
-            onHabitChange={handleHabitChange}
-            onEditHabit={handleOpenEditDialog}
-            onDeleteHabit={handleDeleteHabit}
-            onAddHabit={handleOpenAddDialog} 
-          />
-        </div>
-        
-        <div
-          className="animate-float"
-        >
-          <DailyQuote currentDate={currentDate} />
-        </div>
+        <Tabs defaultValue="tracker" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="tracker">Habit Tracker</TabsTrigger>
+                <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
+            </TabsList>
+            <TabsContent value="tracker" className="mt-6 space-y-6">
+                <div
+                className="animate-in fade-in slide-in-from-top-4 duration-500"
+                style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
+                >
+                <DashboardHeader habits={displayedHabits || []} currentDate={currentDate} />
+                </div>
+                
+                <div
+                className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-top-4 duration-500"
+                style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}
+                >
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-xl sm:text-2xl">Monthly Trend</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pl-2 pr-6">
+                    <TrendAnalysisChart habits={displayedHabits || []} currentDate={currentDate} />
+                    </CardContent>
+                </Card>
+                </div>
+                
+                <div
+                className="animate-in fade-in slide-in-from-top-4 duration-500"
+                style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}
+                >
+                <HabitGrid 
+                    habits={displayedHabits || []} 
+                    currentDate={currentDate} 
+                    onHabitChange={handleHabitChange}
+                    onEditHabit={handleOpenEditDialog}
+                    onDeleteHabit={handleDeleteHabit}
+                    onAddHabit={handleOpenAddDialog} 
+                />
+                </div>
+                
+                <div
+                className="animate-float"
+                >
+                <DailyQuote currentDate={currentDate} />
+                </div>
+            </TabsContent>
+            <TabsContent value="pomodoro" className="mt-6">
+                <PomodoroTimer />
+            </TabsContent>
+        </Tabs>
         
         <div
           className="animate-in fade-in slide-in-from-bottom-4 duration-500"
