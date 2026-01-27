@@ -15,8 +15,8 @@ export const getDaysInMonth = (date: Date) => {
 export const getWeeksInMonth = (date: Date): Date[][] => {
   const days = getDaysInMonth(date);
   const weeks: Date[][] = [];
-  for (let i = 0; i < days.length; i += 6) {
-      weeks.push(days.slice(i, i + 6));
+  for (let i = 0; i < days.length; i += 7) {
+      weeks.push(days.slice(i, i + 7));
   }
   return weeks;
 };
