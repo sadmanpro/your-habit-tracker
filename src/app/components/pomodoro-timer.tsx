@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Pie, PieChart, Cell } from 'recharts';
+import { ChartContainer } from '@/components/ui/chart';
 
 const POMODORO_MINUTES = 25;
 const BREAK_MINUTES = 5;
@@ -56,10 +58,10 @@ export default function PomodoroTimer() {
            // Keep timer running for the next session
         }
       }, 1000);
-    } else if (!isActive && seconds !== 0) {
-      clearInterval(interval!);
     }
-    return () => clearInterval(interval!);
+    return () => {
+      if(interval) clearInterval(interval);
+    };
   }, [isActive, seconds, minutes, isBreak]);
 
   const toggleTimer = () => {
@@ -78,16 +80,75 @@ export default function PomodoroTimer() {
     '0'
   )}`;
 
+  const { chartData, remainingColor } = useMemo(() => {
+    const totalDuration = (isBreak ? BREAK_MINUTES : POMODORO_MINUTES) * 60;
+    const remainingSeconds = minutes * 60 + seconds;
+    
+    const chartData = [
+      { name: 'Remaining', value: remainingSeconds },
+      { name: 'Elapsed', value: totalDuration - remainingSeconds },
+    ];
+
+    let remainingColor = 'hsl(var(--chart-8))'; // Default: light blue
+
+    if (!isBreak) {
+      if (minutes < 5) {
+        remainingColor = 'hsl(var(--accent))'; // green
+      } else if (minutes < 10) {
+        remainingColor = 'hsl(var(--chart-4))'; // yellow
+      } else if (minutes < 15) {
+        remainingColor = 'hsl(var(--destructive))'; // red
+      }
+    } else {
+      // For break time, use a consistent color
+      remainingColor = 'hsl(var(--accent))';
+    }
+
+    return { chartData, remainingColor };
+  }, [minutes, seconds, isBreak]);
+
   return (
     <Card className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}>
       <CardHeader>
         <CardTitle className="text-xl sm:text-2xl">
-          {isBreak ? 'Break Time' : 'Pomodoro Timer'}
+          {isBreak ? 'Break Time' : 'Focus Session'}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center justify-center gap-6">
-        <div className="text-6xl sm:text-8xl font-bold font-mono text-primary tabular-nums">
-          {time}
+        <div className="relative h-64 w-64">
+           <ChartContainer
+            config={{}}
+            className="absolute inset-0 h-full w-full"
+          >
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                innerRadius={80}
+                outerRadius={100}
+                startAngle={90}
+                endAngle={-270}
+                stroke="none"
+                cy="50%"
+                cx="50%"
+              >
+                <Cell
+                  key="remaining"
+                  fill={remainingColor}
+                  className="transition-colors duration-500"
+                />
+                <Cell
+                  key="elapsed"
+                  fill="hsl(var(--muted))"
+                  className="opacity-20"
+                />
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+          <div className="absolute inset-0 flex items-center justify-center text-6xl sm:text-8xl font-bold font-mono text-primary tabular-nums">
+            {time}
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <Button onClick={toggleTimer} size="lg">
