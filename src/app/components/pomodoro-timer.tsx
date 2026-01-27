@@ -146,7 +146,7 @@ export default function PomodoroTimer() {
               </Pie>
             </PieChart>
           </ChartContainer>
-          <div className="absolute inset-0 flex items-center justify-center text-6xl sm:text-7xl font-bold font-mono text-primary tabular-nums">
+          <div className="absolute inset-0 flex items-center justify-center text-5xl sm:text-6xl font-bold font-mono text-primary tabular-nums">
             {time}
           </div>
         </div>
