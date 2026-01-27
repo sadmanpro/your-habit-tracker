@@ -5,7 +5,7 @@ import { getWeeksInMonth, formatDateKey } from '@/lib/date-utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card } from '@/components/ui/card';
 import { Edit, Trash2, PlusCircle, ChevronDown, ChevronUp } from 'lucide-react';
-import { format, isToday, isSameWeek } from 'date-fns';
+import { format, isToday, isSameDay } from 'date-fns';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,7 +50,7 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
   const weeks = getWeeksInMonth(currentDate);
 
   const currentWeek = useMemo(() => {
-    return weeks.find(week => week.some(day => isSameWeek(day, currentDate, { weekStartsOn: 1 })));
+    return weeks.find(week => week.some(day => isSameDay(day, currentDate)));
   }, [weeks, currentDate]);
 
   const displayWeeks = isMonthView ? weeks : (currentWeek ? [currentWeek] : []);
@@ -95,9 +95,9 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                           Habit
                       </th>
                       {isMonthView ? (
-                          weeks.map((week) => (
-                              <th key={weeks.indexOf(week)} colSpan={week.length} className="p-2 text-center border-l font-semibold text-foreground">
-                                  Week {weeks.indexOf(week) + 1}
+                          weeks.map((week, weekIndex) => (
+                              <th key={weekIndex} colSpan={week.length} className="p-2 text-center border-l font-semibold text-foreground">
+                                  Week {weekIndex + 1}
                               </th>
                           ))
                       ) : (
@@ -130,9 +130,9 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                         </div>
                       </th>
                       {displayWeeks.flatMap(week =>
-                          week.map(day => (
+                          week.map((day, dayIndex) => (
                               <th key={formatDateKey(day)} className={cn("p-1 sm:p-2 font-normal text-center border-l w-9 sm:w-14", getDayColumnStyle(day))}>
-                                  <div className={`text-[0.6rem] sm:text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>{format(day, 'E')}</div>
+                                  <div className={`text-[0.6rem] sm:text-xs ${isToday(day) ? 'text-primary font-bold' : ''}`}>Day {dayIndex + 1}</div>
                                   <div className={`text-[0.7rem] sm:text-base font-medium ${isToday(day) ? 'text-primary font-extrabold' : ''}`}>{format(day, 'd')}</div>
                               </th>
                           ))

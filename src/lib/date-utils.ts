@@ -3,9 +3,7 @@ import {
   endOfMonth,
   startOfMonth,
   format,
-  getWeek,
-  startOfWeek,
-  endOfWeek,
+  isSameDay,
 } from 'date-fns';
 
 export const getDaysInMonth = (date: Date) => {
@@ -14,31 +12,19 @@ export const getDaysInMonth = (date: Date) => {
   return eachDayOfInterval({ start, end });
 };
 
-export const getDaysInCurrentWeek = (date: Date) => {
-  const start = startOfWeek(date, { weekStartsOn: 1 });
-  const end = endOfWeek(date, { weekStartsOn: 1 });
-  return eachDayOfInterval({ start, end });
+export const getWeeksInMonth = (date: Date): Date[][] => {
+  const days = getDaysInMonth(date);
+  const weeks: Date[][] = [];
+  for (let i = 0; i < days.length; i += 6) {
+      weeks.push(days.slice(i, i + 6));
+  }
+  return weeks;
 };
 
-export const getWeeksInMonth = (date: Date) => {
-  const days = getDaysInMonth(date);
-  const weeks: Record<number, Date[]> = {};
-
-  days.forEach((day) => {
-    // Using ISO week numbering; weekStartsOn: 1 (Monday)
-    const weekNumber = getWeek(day, { weekStartsOn: 1 }); 
-    if (!weeks[weekNumber]) {
-      weeks[weekNumber] = [];
-    }
-    weeks[weekNumber].push(day);
-  });
-  
-  // Ensure weeks are sorted by their numeric key
-  const sortedWeeks = Object.keys(weeks)
-    .sort((a, b) => parseInt(a) - parseInt(b))
-    .map(weekKey => weeks[parseInt(weekKey)]);
-
-  return sortedWeeks;
+export const getDaysInCurrentWeek = (date: Date) => {
+  const weeks = getWeeksInMonth(date);
+  const currentSegment = weeks.find(week => week.some(day => isSameDay(day, date)));
+  return currentSegment || [];
 };
 
 export const formatDateKey = (date: Date): string => {
