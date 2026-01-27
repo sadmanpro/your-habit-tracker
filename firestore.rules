@@ -90,6 +90,14 @@ service cloud.firestore {
     function isHabitImmutableOnUpdate() {
       return request.resource.data.userId == resource.data.userId;
     }
+    
+    /**
+     * On create, validates that the new PomodoroSession document's internal `userId`
+     * field correctly points back to the owner specified in the path.
+     */
+    function isValidPomodoroSessionOnCreate(userId) {
+      return request.resource.data.userId == userId;
+    }
 
     // =====================================================================
     // Collection Rules
@@ -124,6 +132,19 @@ service cloud.firestore {
         allow get, list: if isOwner(userId);
         allow create: if isOwner(userId) && isValidHabitOnCreate(userId);
         allow update: if isExistingOwner(userId) && isHabitImmutableOnUpdate();
+        allow delete: if isExistingOwner(userId);
+      }
+      
+      /**
+       * @description Manages completed Pomodoro sessions for a user.
+       * @path /users/{userId}/pomodoroSessions/{sessionId}
+       * @allow (create, list, get) An authenticated user can manage their own sessions.
+       * @deny (update) Sessions are immutable once created.
+       */
+      match /pomodoroSessions/{sessionId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidPomodoroSessionOnCreate(userId);
+        allow update: if false;
         allow delete: if isExistingOwner(userId);
       }
     }

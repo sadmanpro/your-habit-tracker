@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import { Pie, PieChart, Cell } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
+import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { collection } from 'firebase/firestore';
 
 const POMODORO_MINUTES = 25;
 const BREAK_MINUTES = 5;
@@ -15,6 +17,8 @@ export default function PomodoroTimer() {
   const [seconds, setSeconds] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
+  const { user } = useUser();
+  const firestore = useFirestore();
 
   const workEndSfxRef = useRef<HTMLAudioElement | null>(null);
   const breakEndSfxRef = useRef<HTMLAudioElement | null>(null);
@@ -51,6 +55,14 @@ export default function PomodoroTimer() {
           } else {
             workEndSfxRef.current?.play();
             // End of work, switch to break
+            if (user) {
+              const sessionsCol = collection(firestore, 'users', user.uid, 'pomodoroSessions');
+              addDocumentNonBlocking(sessionsCol, {
+                  userId: user.uid,
+                  completedAt: new Date().toISOString(),
+                  duration: POMODORO_MINUTES,
+              });
+            }
             setIsBreak(true);
             setMinutes(BREAK_MINUTES);
             setSeconds(0);
@@ -62,7 +74,7 @@ export default function PomodoroTimer() {
     return () => {
       if(interval) clearInterval(interval);
     };
-  }, [isActive, seconds, minutes, isBreak]);
+  }, [isActive, seconds, minutes, isBreak, user, firestore]);
 
   const toggleTimer = () => {
     setIsActive(!isActive);
@@ -89,19 +101,16 @@ export default function PomodoroTimer() {
       { name: 'Elapsed', value: totalDuration - remainingSeconds },
     ];
 
-    let remainingColor = 'hsl(var(--chart-8))'; // Default: light blue
+    let remainingColor = 'hsl(var(--accent))'; // green for break or default
 
     if (!isBreak) {
-        if (minutes < 5) {
+        if (remainingSeconds <= 5 * 60) {
             remainingColor = 'hsl(var(--destructive))'; // red
-        } else if (minutes < 10) {
+        } else if (remainingSeconds <= 10 * 60) {
             remainingColor = 'hsl(var(--chart-4))'; // yellow
-        } else if (minutes < 15) {
-            remainingColor = 'hsl(var(--accent))'; // green
+        } else if (remainingSeconds <= 15 * 60) {
+          remainingColor = 'hsl(var(--chart-8))'; // light blue
         }
-    } else {
-      // For break time, use a consistent color
-      remainingColor = 'hsl(var(--accent))';
     }
 
     return { chartData, remainingColor };
@@ -146,7 +155,7 @@ export default function PomodoroTimer() {
               </Pie>
             </PieChart>
           </ChartContainer>
-          <div className="absolute inset-0 flex items-center justify-center text-5xl sm:text-6xl font-bold font-mono text-primary tabular-nums">
+          <div className="absolute inset-0 flex items-center justify-center text-5xl font-bold font-mono text-primary tabular-nums">
             {time}
           </div>
         </div>

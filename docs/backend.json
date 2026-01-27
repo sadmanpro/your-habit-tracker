@@ -76,6 +76,32 @@
         "createdAt",
         "completions"
       ]
+    },
+    "PomodoroSession": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Pomodoro Session",
+      "type": "object",
+      "description": "Represents a completed Pomodoro focus session.",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User."
+        },
+        "completedAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the session was completed.",
+          "format": "date-time"
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration of the focus session in minutes."
+        }
+      },
+      "required": [
+        "userId",
+        "completedAt",
+        "duration"
+      ]
     }
   },
   "auth": {
@@ -118,6 +144,26 @@
             {
               "name": "habitId",
               "description": "The unique identifier of the habit."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/pomodoroSessions/{sessionId}",
+        "definition": {
+          "entityName": "PomodoroSession",
+          "schema": {
+            "$ref": "#/backend/entities/PomodoroSession"
+          },
+          "description": "Stores completed Pomodoro sessions for a user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "sessionId",
+              "description": "The unique identifier of the session."
             }
           ]
         }

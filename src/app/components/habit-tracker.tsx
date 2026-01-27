@@ -31,6 +31,8 @@ import { collection, doc, getDoc, setDoc, query, orderBy } from 'firebase/firest
 import { signOut } from 'firebase/auth';
 import Footer from './footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import PomodoroWeeklyChart from './pomodoro-weekly-chart';
+import PomodoroMonthlyChart from './pomodoro-monthly-chart';
 
 const defaultHabits: Habit[] = [
   {
@@ -263,14 +265,19 @@ export default function HabitTracker() {
                 <DailyQuote currentDate={currentDate} />
                 </div>
             </TabsContent>
-            <TabsContent value="pomodoro" className="mt-6">
+            <TabsContent value="pomodoro" className="mt-6 space-y-6">
                 <PomodoroTimer />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500"
+                style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}>
+                    <PomodoroWeeklyChart />
+                    <PomodoroMonthlyChart />
+                </div>
             </TabsContent>
         </Tabs>
         
         <div
           className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-          style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}
+          style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}
         >
           <Footer />
         </div>
