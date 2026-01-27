@@ -92,13 +92,13 @@ export default function PomodoroTimer() {
     let remainingColor = 'hsl(var(--chart-8))'; // Default: light blue
 
     if (!isBreak) {
-      if (minutes < 5) {
-        remainingColor = 'hsl(var(--accent))'; // green
-      } else if (minutes < 10) {
-        remainingColor = 'hsl(var(--chart-4))'; // yellow
-      } else if (minutes < 15) {
-        remainingColor = 'hsl(var(--destructive))'; // red
-      }
+        if (minutes < 5) {
+            remainingColor = 'hsl(var(--destructive))'; // red
+        } else if (minutes < 10) {
+            remainingColor = 'hsl(var(--chart-4))'; // yellow
+        } else if (minutes < 15) {
+            remainingColor = 'hsl(var(--accent))'; // green
+        }
     } else {
       // For break time, use a consistent color
       remainingColor = 'hsl(var(--accent))';
@@ -118,7 +118,7 @@ export default function PomodoroTimer() {
         <div className="relative h-64 w-64">
            <ChartContainer
             config={{}}
-            className="absolute inset-0 h-full w-full"
+            className="h-full w-full"
           >
             <PieChart>
               <Pie
@@ -146,7 +146,7 @@ export default function PomodoroTimer() {
               </Pie>
             </PieChart>
           </ChartContainer>
-          <div className="absolute inset-0 flex items-center justify-center text-6xl sm:text-8xl font-bold font-mono text-primary tabular-nums">
+          <div className="absolute inset-0 flex items-center justify-center text-6xl sm:text-7xl font-bold font-mono text-primary tabular-nums">
             {time}
           </div>
         </div>
