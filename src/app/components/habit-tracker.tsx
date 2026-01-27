@@ -8,6 +8,7 @@ import HabitGrid from './habit-grid';
 import AddEditHabitDialog from './add-edit-habit-dialog';
 import AuthDialog from './auth-dialog';
 import DailyQuote from './daily-quote';
+import PomodoroTimer from './pomodoro-timer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ThemeToggle } from './theme-toggle';
@@ -234,6 +235,8 @@ export default function HabitTracker() {
             </CardContent>
           </Card>
         </div>
+        
+        <PomodoroTimer />
         
         <div
           className="animate-in fade-in slide-in-from-top-4 duration-500"
