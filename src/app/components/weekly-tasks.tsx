@@ -64,8 +64,7 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
       collection(firestore, 'users', user.uid, 'dailyTasks'),
       where('date', '>=', formatDateKey(weekStart)),
       where('date', '<=', formatDateKey(weekEnd)),
-      orderBy('date', 'asc'),
-      orderBy('createdAt', 'asc')
+      orderBy('date', 'asc')
     );
   }, [firestore, user, weekStart, weekEnd]);
 
@@ -104,6 +103,12 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
         }
       });
     }
+
+    // Sort tasks within each day by creation time
+    for (const dayKey in groupedTasks) {
+      groupedTasks[dayKey].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    }
+
     return groupedTasks;
   }, [tasks, daysInWeek]);
 
