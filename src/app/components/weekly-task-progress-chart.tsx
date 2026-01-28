@@ -37,7 +37,7 @@ export default function WeeklyTaskProgressChart({ tasks, currentDate }: WeeklyTa
   const chartConfig: ChartConfig = {
     completionRate: {
       label: 'Completion %',
-      color: 'hsl(var(--chart-1))',
+      color: 'hsl(var(--chart-8))',
     },
   };
 
@@ -72,7 +72,7 @@ export default function WeeklyTaskProgressChart({ tasks, currentDate }: WeeklyTa
               bottom: 0,
             }}
           >
-            <CartesianGrid vertical={false} stroke="hsl(var(--border) / 0.7)" />
+            <CartesianGrid vertical={false} stroke="hsl(var(--border))" />
             <XAxis
               dataKey="date"
               tickLine={false}

@@ -102,16 +102,12 @@ export default function PomodoroTimer() {
       { name: 'Elapsed', value: totalDuration - remainingSeconds },
     ];
 
-    let remainingColor = 'hsl(var(--accent))'; // green for break or default
+    let remainingColor;
 
-    if (!isBreak) {
-        if (remainingSeconds <= 5 * 60) {
-            remainingColor = 'hsl(var(--destructive))'; // red
-        } else if (remainingSeconds <= 10 * 60) {
-            remainingColor = 'hsl(var(--chart-4))'; // yellow
-        } else if (remainingSeconds <= 15 * 60) {
-          remainingColor = 'hsl(var(--chart-8))'; // light blue
-        }
+    if (isBreak) {
+      remainingColor = 'hsl(var(--accent))'; // Keep break time green
+    } else {
+      remainingColor = 'hsl(var(--chart-8))'; // Always blue for work session
     }
 
     return { chartData, remainingColor };
