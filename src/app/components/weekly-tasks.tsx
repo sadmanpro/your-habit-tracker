@@ -13,7 +13,7 @@ import {
 import { doc } from 'firebase/firestore';
 import { getCalendarWeekDays, formatDateKey } from '@/lib/date-utils';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import type { DailyTask } from '@/lib/tasks-data';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -63,8 +63,7 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
     return query(
       collection(firestore, 'users', user.uid, 'dailyTasks'),
       where('date', '>=', formatDateKey(weekStart)),
-      where('date', '<=', formatDateKey(weekEnd)),
-      orderBy('date', 'asc')
+      where('date', '<=', formatDateKey(weekEnd))
     );
   }, [firestore, user, weekStart, weekEnd]);
 
@@ -192,11 +191,11 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
                     const dayTasks = tasksByDay[dayKey] || [];
                     return (
                         <div key={dayKey} className="p-2 rounded-lg bg-muted/50 space-y-2 flex flex-col">
+                            <DailyTaskProgressPie tasks={dayTasks} />
                             <div className="font-semibold text-center">
                                 <p className="text-xs">{format(day, 'EEE')}</p>
                                 <p className="text-xl font-bold">{format(day, 'd')}</p>
                             </div>
-                            <DailyTaskProgressPie tasks={dayTasks} />
                             <div className="space-y-2 flex-1 overflow-y-auto min-h-[100px]">
                                 {dayTasks.map(task => (
                                     <div key={task.id} className="group flex items-center gap-1 p-2 rounded-md bg-card shadow-sm">
