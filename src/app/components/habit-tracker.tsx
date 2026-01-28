@@ -259,12 +259,12 @@ export default function HabitTracker() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               {user ? (
-                 <Button variant="ghost" size="icon" onClick={handleSignOut} className="rounded-full hover:bg-blue-500/5">
+                 <Button variant="ghost" size="icon" onClick={handleSignOut} className="rounded-full hover:bg-blue-500/5 hover:text-foreground">
                     <LogOut className="h-6 w-6" />
                     <span className="sr-only">Sign Out</span>
                 </Button>
               ) : (
-                <Button variant="ghost" size="icon" onClick={() => setIsAuthDialogOpen(true)} className="rounded-full hover:bg-blue-500/5">
+                <Button variant="ghost" size="icon" onClick={() => setIsAuthDialogOpen(true)} className="rounded-full hover:bg-blue-500/5 hover:text-foreground">
                     <UserIcon className="h-6 w-6" />
                     <span className="sr-only">Open profile</span>
                 </Button>
