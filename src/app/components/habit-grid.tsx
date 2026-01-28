@@ -96,11 +96,9 @@ export default function HabitGrid({ habits, currentDate, onHabitChange, onEditHa
                       </th>
                       {isMonthView ? (
                           weeks.map((week, weekIndex) => {
-                              const startDay = week.reduce((acc, _, i) => weeks.slice(0, weekIndex).reduce((sum, w) => sum + w.length, 0) + i + 1, 0);
-                              const endDay = startDay + week.length - 1;
                               return (
                                 <th key={weekIndex} colSpan={week.length} className="p-2 text-center border-l font-semibold text-foreground">
-                                    Days {startDay}-{endDay}
+                                    Week {weekIndex + 1}
                                 </th>
                               );
                           })
