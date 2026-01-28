@@ -72,24 +72,46 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
   const dummyTasks = useMemo(() => {
     if (user) return null;
     const tasks: DailyTask[] = [];
-    daysInWeek.forEach((day) => {
-        const dayKey = formatDateKey(day);
-        for (let i = 1; i <= 4; i++) {
-            tasks.push({
-                id: `dummy-${dayKey}-${i}`,
-                name: `Example Task ${i}`,
-                date: dayKey,
-                isCompleted: i % 2 === 0,
-                userId: 'anonymous',
-                createdAt: new Date().toISOString(),
-            });
-        }
+    const weeklyExampleTasks = [
+      // Monday
+      ['Plan week\'s goals', 'Kick-off project meeting', 'HIIT workout', 'Meal prep for the week'],
+      // Tuesday
+      ['Client follow-up calls', 'Deep work on feature X', 'Yoga session', 'Read industry articles'],
+      // Wednesday
+      ['Team sync-up', 'Code review', 'Mid-week progress check', 'Go for a run'],
+      // Thursday
+      ['Draft presentation', 'User testing session', 'Strength training', 'Network on LinkedIn'],
+      // Friday
+      ['Finalize weekly report', 'Celebrate team wins', 'Declutter digital space', 'Plan weekend'],
+      // Saturday
+      ['Morning hike', 'Work on personal project', 'Grocery shopping', 'Relax & watch a movie'],
+      // Sunday
+      ['Review finances', 'Tidy up the house', 'Quality time with family', 'Prepare for Monday']
+    ];
+
+    daysInWeek.forEach((day, dayIndex) => {
+      const dayTasks = weeklyExampleTasks[dayIndex % 7]; // Use modulo to be safe
+      const dayKey = formatDateKey(day);
+      dayTasks.forEach((taskName, taskIndex) => {
+        tasks.push({
+          id: `dummy-${dayKey}-${taskIndex}`,
+          name: taskName,
+          date: dayKey,
+          isCompleted: taskIndex % 2 === (dayIndex % 2), // Alternate completion for visual variety
+          userId: 'anonymous',
+          createdAt: new Date().toISOString(),
+        });
+      });
     });
     return tasks;
   }, [user, daysInWeek]);
 
   const tasks = useMemo(() => {
-    return user ? firestoreTasks : dummyTasks;
+    // Sort firestore tasks by creation date
+    const sortedFirestoreTasks = firestoreTasks
+      ? [...firestoreTasks].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      : null;
+    return user ? sortedFirestoreTasks : dummyTasks;
   }, [user, firestoreTasks, dummyTasks]);
   
   const tasksByDay = useMemo(() => {
@@ -103,11 +125,6 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
           groupedTasks[task.date].push(task);
         }
       });
-    }
-
-    // Sort tasks within each day by creation time
-    for (const dayKey in groupedTasks) {
-      groupedTasks[dayKey].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }
 
     return groupedTasks;
