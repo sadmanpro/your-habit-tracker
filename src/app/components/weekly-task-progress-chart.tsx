@@ -6,14 +6,14 @@ import {
   ChartTooltip,
   ChartConfig,
 } from '@/components/ui/chart';
-import type { WeeklyTask } from '@/lib/tasks-data';
+import type { DailyTask } from '@/lib/tasks-data';
 import { getCalendarWeekDays, formatDateKey } from '@/lib/date-utils';
 import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type WeeklyTaskProgressChartProps = {
-  tasks: WeeklyTask[];
+  tasks: DailyTask[];
   currentDate: Date;
 };
 
@@ -22,10 +22,9 @@ export default function WeeklyTaskProgressChart({ tasks, currentDate }: WeeklyTa
   
   const chartData = useMemo(() => daysInWeek.map(day => {
     const dayKey = formatDateKey(day);
-    const completedOnDay = tasks.reduce((acc, task) => {
-      return acc + (task.completions[dayKey] ? 1 : 0);
-    }, 0);
-    const totalTasks = tasks.length;
+    const tasksForDay = tasks.filter(task => task.date === dayKey);
+    const completedOnDay = tasksForDay.filter(task => task.isCompleted).length;
+    const totalTasks = tasksForDay.length;
     const completionRate = totalTasks > 0 ? (completedOnDay / totalTasks) * 100 : 0;
     return {
       date: format(day, 'E'),

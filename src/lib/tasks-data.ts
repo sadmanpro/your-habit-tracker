@@ -1,8 +1,8 @@
-export type WeeklyTask = {
+export type DailyTask = {
   id: string;
   name: string;
-  weekStartDate: string;
-  completions: Record<string, boolean>; // date string 'YYYY-MM-DD' -> boolean
+  date: string; // YYYY-MM-DD
+  isCompleted: boolean;
   userId: string;
   createdAt: string;
 };

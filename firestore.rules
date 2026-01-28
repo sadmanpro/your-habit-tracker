@@ -100,24 +100,25 @@ service cloud.firestore {
     }
 
     /**
-     * On create, validates that the new WeeklyTask document has valid data.
+     * On create, validates that the new DailyTask document has valid data.
      */
-    function isValidWeeklyTaskOnCreate(userId) {
+    function isValidDailyTaskOnCreate(userId) {
       let data = request.resource.data;
       return data.userId == userId
           && data.name is string && data.name.size() > 0 && data.name.size() < 100
-          && data.weekStartDate is string
+          && data.date is string
+          && data.isCompleted is bool
           && data.createdAt is string;
     }
 
     /**
-     * On update, ensures the WeeklyTask document's core fields are immutable.
+     * On update, ensures the DailyTask document's core fields are immutable.
      */
-    function isWeeklyTaskImmutableOnUpdate() {
+    function isDailyTaskImmutableOnUpdate() {
       let data = request.resource.data;
       let existingData = resource.data;
       return data.userId == existingData.userId
-          && data.weekStartDate == existingData.weekStartDate
+          && data.date == existingData.date
           && data.createdAt == existingData.createdAt;
     }
 
@@ -171,14 +172,14 @@ service cloud.firestore {
       }
 
       /**
-       * @description Manages weekly tasks for a specific user.
-       * @path /users/{userId}/weeklyTasks/{taskId}
-       * @allow (create, list, get, update, delete) An authenticated user can manage their own weekly tasks.
+       * @description Manages daily tasks for a specific user.
+       * @path /users/{userId}/dailyTasks/{taskId}
+       * @allow (create, list, get, update, delete) An authenticated user can manage their own daily tasks.
        */
-      match /weeklyTasks/{taskId} {
+      match /dailyTasks/{taskId} {
         allow get, list: if isOwner(userId);
-        allow create: if isOwner(userId) && isValidWeeklyTaskOnCreate(userId);
-        allow update: if isExistingOwner(userId) && isWeeklyTaskImmutableOnUpdate();
+        allow create: if isOwner(userId) && isValidDailyTaskOnCreate(userId);
+        allow update: if isExistingOwner(userId) && isDailyTaskImmutableOnUpdate();
         allow delete: if isExistingOwner(userId);
       }
     }

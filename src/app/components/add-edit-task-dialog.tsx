@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import type { WeeklyTask } from '@/lib/tasks-data';
+import type { DailyTask } from '@/lib/tasks-data';
 import { useEffect } from 'react';
 
 const formSchema = z.object({
@@ -34,7 +34,7 @@ type AddEditTaskDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   onSave: (taskData: { name: string; id?: string }) => void;
-  taskToEdit: WeeklyTask | null;
+  taskToEdit: DailyTask | null;
 };
 
 export default function AddEditTaskDialog({
@@ -69,11 +69,11 @@ export default function AddEditTaskDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{taskToEdit ? 'Edit Task' : 'Add New Weekly Task'}</DialogTitle>
+          <DialogTitle>{taskToEdit ? 'Edit Task' : 'Add New Task'}</DialogTitle>
           <DialogDescription>
             {taskToEdit
               ? "Make changes to your task here. Click save when you're done."
-              : "Add a new task for the current week. Click save when you're done."}
+              : 'Add a new task. Click save when you\'re done.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
