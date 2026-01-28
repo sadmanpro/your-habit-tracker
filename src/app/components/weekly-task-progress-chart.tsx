@@ -72,7 +72,7 @@ export default function WeeklyTaskProgressChart({ tasks, currentDate }: WeeklyTa
               bottom: 0,
             }}
           >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <CartesianGrid vertical={false} stroke="hsl(var(--border) / 0.7)" />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -87,6 +87,7 @@ export default function WeeklyTaskProgressChart({ tasks, currentDate }: WeeklyTa
               tickFormatter={(value) => `${value}%`}
               domain={[0, 100]}
               fontSize={12}
+              ticks={[0, 25, 50, 75, 100]}
             />
             <ChartTooltip
               cursor={true}

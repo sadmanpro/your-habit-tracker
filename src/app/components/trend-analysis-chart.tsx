@@ -79,7 +79,7 @@ export default function TrendAnalysisChart({ habits, currentDate }: TrendAnalysi
             bottom: 0,
           }}
         >
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+          <CartesianGrid vertical={false} stroke="hsl(var(--border) / 0.7)" />
           <XAxis
             dataKey="date"
             tickLine={false}
