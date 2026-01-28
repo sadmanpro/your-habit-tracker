@@ -114,7 +114,7 @@ export default function PomodoroTimer() {
   }, [minutes, seconds, isBreak]);
 
   return (
-    <Card className="animate-in fade-in slide-in-from-top-4 duration-500" style={{ animationDelay: '500ms', animationFillMode: 'backwards' }}>
+    <Card className="animate-in fade-in slide-in-from-top-4 duration-500">
       <CardHeader>
         <CardTitle className="text-xl sm:text-2xl">
           {isBreak ? 'Break Time' : 'Focus Session'}

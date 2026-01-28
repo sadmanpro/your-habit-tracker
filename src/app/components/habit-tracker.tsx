@@ -249,7 +249,6 @@ export default function HabitTracker() {
       <div className="max-w-7xl mx-auto space-y-6">
         <header
           className="animate-in fade-in slide-in-from-top-2 duration-500"
-          style={{ animationFillMode: 'backwards' }}
         >
           <div className="flex justify-between items-center">
             <div>
@@ -289,14 +288,12 @@ export default function HabitTracker() {
             <TabsContent value="tracker" className="mt-6 space-y-6">
                 <div
                 className="animate-in fade-in slide-in-from-top-4 duration-500"
-                style={{ animationDelay: '200ms', animationFillMode: 'backwards' }}
                 >
                 <DashboardHeader habits={displayedHabits || []} currentDate={currentDate} />
                 </div>
                 
                 <div
                 className="grid grid-cols-1 gap-6 animate-in fade-in slide-in-from-top-4 duration-500"
-                style={{ animationDelay: '300ms', animationFillMode: 'backwards' }}
                 >
                 <Card>
                     <CardHeader>
@@ -310,7 +307,6 @@ export default function HabitTracker() {
                 
                 <div
                 className="animate-in fade-in slide-in-from-top-4 duration-500"
-                style={{ animationDelay: '400ms', animationFillMode: 'backwards' }}
                 >
                 <HabitGrid 
                     habits={displayedHabits || []} 
@@ -330,8 +326,7 @@ export default function HabitTracker() {
             </TabsContent>
             <TabsContent value="pomodoro" className="mt-6 space-y-6">
                 <PomodoroTimer />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500"
-                style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
                     <PomodoroWeeklyChart />
                     <PomodoroMonthlyChart />
                 </div>
@@ -343,7 +338,6 @@ export default function HabitTracker() {
         
         <div
           className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-          style={{ animationDelay: '700ms', animationFillMode: 'backwards' }}
         >
           <Footer />
         </div>
