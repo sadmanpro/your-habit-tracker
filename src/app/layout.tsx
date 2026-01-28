@@ -23,7 +23,6 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <div className="relative isolate min-h-screen">
-            <div className="aurora-background pointer-events-none absolute inset-0 -z-10" />
             <FirebaseClientProvider>
                 <ThemeProvider
                     attribute="class"
