@@ -248,7 +248,7 @@ export default function HabitTracker() {
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <header
-          className="animate-in fade-in duration-500"
+          className="animate-in fade-in slide-in-from-top-2 duration-500"
           style={{ animationFillMode: 'backwards' }}
         >
           <div className="flex justify-between items-center">
