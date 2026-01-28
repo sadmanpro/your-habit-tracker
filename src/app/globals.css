@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+    .aurora-background {
+        background:
+            linear-gradient(125deg, hsl(var(--primary) / 0.15) 0%, transparent 50%),
+            linear-gradient(225deg, hsl(var(--accent) / 0.15) 0%, transparent 50%),
+            linear-gradient(335deg, hsl(var(--destructive) / 0.15) 0%, transparent 50%);
+        background-size: 300% 300%;
+        animation: aurora 20s ease infinite;
+    }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

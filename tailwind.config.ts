@@ -96,12 +96,17 @@ export default {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.02)' },
         },
+        aurora: {
+          from: { backgroundPosition: '0% 50%' },
+          to: { backgroundPosition: '200% 50%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         float: 'float 5s ease-in-out infinite',
         breath: 'breath 4s ease-in-out infinite',
+        aurora: 'aurora 20s ease infinite',
       },
     },
   },
