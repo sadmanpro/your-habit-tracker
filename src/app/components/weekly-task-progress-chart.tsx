@@ -111,10 +111,10 @@ export default function WeeklyTaskProgressChart({ tasks, currentDate }: WeeklyTa
               type="monotone"
               stroke="var(--color-completionRate)"
               fill="url(#fillWeeklyProgress)"
-              strokeWidth={2}
+              strokeWidth={3}
               dot={false}
               activeDot={{
-                r: 6,
+                r: 8,
               }}
             />
           </AreaChart>
