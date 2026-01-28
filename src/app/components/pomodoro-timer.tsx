@@ -8,6 +8,7 @@ import { Pie, PieChart, Cell } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
 import { useUser, useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { collection } from 'firebase/firestore';
+import { cn } from '@/lib/utils';
 
 const POMODORO_MINUTES = 25;
 const BREAK_MINUTES = 5;
@@ -160,7 +161,7 @@ export default function PomodoroTimer() {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Button onClick={toggleTimer} size="lg">
+          <Button onClick={toggleTimer} size="lg" className={cn(!isActive && 'animate-breath')}>
             {isActive ? <Pause /> : <Play />}
             <span className="ml-2">{isActive ? 'Pause' : 'Start'}</span>
           </Button>
