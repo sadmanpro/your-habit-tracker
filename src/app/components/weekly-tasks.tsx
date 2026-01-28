@@ -41,7 +41,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 
-export default function WeeklyTasks() {
+export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () => void }) {
   const [currentDate] = useState(new Date());
   const { user } = useUser();
   const firestore = useFirestore();
@@ -56,6 +56,7 @@ export default function WeeklyTasks() {
 
   const weekStart = useMemo(() => startOfWeek(currentDate, { weekStartsOn: 1 }), [currentDate]);
   const weekEnd = useMemo(() => endOfWeek(currentDate, { weekStartsOn: 1 }), [currentDate]);
+  const daysInWeek = useMemo(() => getCalendarWeekDays(currentDate), [currentDate]);
 
   const tasksQuery = useMemoFirebase(() => {
     if (!user) return null;
@@ -68,9 +69,28 @@ export default function WeeklyTasks() {
     );
   }, [firestore, user, weekStart, weekEnd]);
 
-  const { data: tasks } = useCollection<DailyTask>(tasksQuery);
+  const { data: firestoreTasks } = useCollection<DailyTask>(tasksQuery);
+  
+  const dummyTasks = useMemo(() => {
+    if (user) return null;
+    const tasks: DailyTask[] = [];
+    daysInWeek.forEach((day) => {
+        const dayKey = formatDateKey(day);
+        for (let i = 1; i <= 4; i++) {
+            tasks.push({
+                id: `dummy-${dayKey}-${i}`,
+                name: `Example Task ${i}`,
+                date: dayKey,
+                isCompleted: i % 2 === 0,
+                userId: 'anonymous',
+                createdAt: new Date().toISOString(),
+            });
+        }
+    });
+    return tasks;
+  }, [user, daysInWeek]);
 
-  const daysInWeek = useMemo(() => getCalendarWeekDays(currentDate), [currentDate]);
+  const tasks = user ? firestoreTasks : dummyTasks;
   
   const tasksByDay = useMemo(() => {
     const groupedTasks: { [key: string]: DailyTask[] } = {};
@@ -88,12 +108,20 @@ export default function WeeklyTasks() {
   }, [tasks, daysInWeek]);
 
   const handleOpenAddTaskDialog = (date: string) => {
+    if (!user) {
+      onAuthRequested();
+      return;
+    }
     setTaskToEdit(null);
     setSelectedDate(date);
     setIsDialogOpen(true);
   };
   
   const handleOpenEditTaskDialog = (task: DailyTask) => {
+    if (!user) {
+      onAuthRequested();
+      return;
+    }
     setTaskToEdit(task);
     setSelectedDate(task.date);
     setIsDialogOpen(true);
@@ -120,7 +148,10 @@ export default function WeeklyTasks() {
   };
 
   const handleToggleTask = (task: DailyTask) => {
-    if (!user) return;
+    if (!user) {
+      onAuthRequested();
+      return;
+    }
     const taskRef = doc(firestore, 'users', user.uid, 'dailyTasks', task.id);
     updateDocumentNonBlocking(taskRef, { isCompleted: !task.isCompleted });
   };
@@ -133,13 +164,12 @@ export default function WeeklyTasks() {
     setDeleteAlert({ isOpen: false, taskId: null });
   };
 
-
-  if (!user) {
-    return (
-        <div className="flex items-center justify-center h-full text-muted-foreground">
-            <p>Please log in to manage your weekly tasks.</p>
-        </div>
-    )
+  const handleOpenDeleteDialog = (taskId: string) => {
+    if (!user) {
+      onAuthRequested();
+      return;
+    }
+    setDeleteAlert({ isOpen: true, taskId: taskId });
   }
 
   return (
@@ -171,10 +201,10 @@ export default function WeeklyTasks() {
                                             onCheckedChange={() => handleToggleTask(task)}
                                             className="h-3 w-3 sm:h-4 sm:w-4"
                                         />
-                                        <label htmlFor={`task-${task.id}`} className="text-xs sm:text-sm font-medium break-all cursor-pointer flex-1">{task.name}</label>
+                                        <label htmlFor={`task-${task.id}`} className={`text-xs sm:text-sm font-medium break-all flex-1 ${user ? 'cursor-pointer' : 'cursor-default'}`}>{task.name}</label>
                                         <DropdownMenu>
                                           <DropdownMenuTrigger asChild>
-                                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 flex-shrink-0">
+                                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 flex-shrink-0" disabled={!user}>
                                                   <MoreVertical className="h-3 w-3" />
                                               </Button>
                                           </DropdownMenuTrigger>
@@ -183,7 +213,7 @@ export default function WeeklyTasks() {
                                                   <Edit className="mr-2 h-3 w-3" />
                                                   <span>Edit</span>
                                               </DropdownMenuItem>
-                                              <DropdownMenuItem onClick={() => setDeleteAlert({ isOpen: true, taskId: task.id })} className="text-destructive focus:text-destructive">
+                                              <DropdownMenuItem onClick={() => handleOpenDeleteDialog(task.id)} className="text-destructive focus:text-destructive">
                                                   <Trash2 className="mr-2 h-3 w-3" />
                                                   <span>Delete</span>
                                               </DropdownMenuItem>

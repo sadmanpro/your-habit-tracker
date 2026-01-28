@@ -286,7 +286,7 @@ export default function HabitTracker() {
                 </div>
             </TabsContent>
             <TabsContent value="weekly-tasks" className="mt-6 space-y-6">
-                <WeeklyTasks />
+                <WeeklyTasks onAuthRequested={() => setIsAuthDialogOpen(true)} />
             </TabsContent>
         </Tabs>
         
