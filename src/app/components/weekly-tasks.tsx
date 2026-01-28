@@ -89,15 +89,19 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
       ['Review finances', 'Tidy up the house', 'Quality time with family', 'Prepare for Monday']
     ];
 
+    // This pattern creates a "high-low" effect for the weekly progress graph
+    const completionPattern = [3, 1, 4, 2, 3, 1, 2]; // 75%, 25%, 100%, 50%, 75%, 25%, 50%
+
     daysInWeek.forEach((day, dayIndex) => {
-      const dayTasks = weeklyExampleTasks[dayIndex % 7]; // Use modulo to be safe
+      const dayTasks = weeklyExampleTasks[dayIndex % 7];
       const dayKey = formatDateKey(day);
+      const numCompleted = completionPattern[dayIndex % 7];
       dayTasks.forEach((taskName, taskIndex) => {
         tasks.push({
           id: `dummy-${dayKey}-${taskIndex}`,
           name: taskName,
           date: dayKey,
-          isCompleted: taskIndex % 2 === (dayIndex % 2), // Alternate completion for visual variety
+          isCompleted: taskIndex < numCompleted,
           userId: 'anonymous',
           createdAt: new Date().toISOString(),
         });

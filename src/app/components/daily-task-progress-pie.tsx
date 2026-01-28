@@ -9,17 +9,6 @@ type DailyTaskProgressPieProps = {
   tasks: DailyTask[];
 };
 
-const chartConfig: ChartConfig = {
-  completed: {
-    label: 'Completed',
-    color: 'hsl(var(--chart-1))',
-  },
-  incomplete: {
-    label: 'Incomplete',
-    color: 'hsl(var(--muted))',
-  }
-}
-
 export default function DailyTaskProgressPie({ tasks }: DailyTaskProgressPieProps) {
   const stats = useMemo(() => {
     if (!tasks || tasks.length === 0) {
@@ -35,6 +24,34 @@ export default function DailyTaskProgressPie({ tasks }: DailyTaskProgressPieProp
 
     return { percentage, completed, total };
   }, [tasks]);
+
+  const chartConfig: ChartConfig = useMemo(() => {
+    const { percentage } = stats;
+    let color = 'hsl(var(--muted))';
+
+    if (percentage === 100) {
+      color = 'hsl(var(--chart-1))'; // full green
+    } else if (percentage > 75) {
+      color = 'hsl(var(--chart-2))'; // light green
+    } else if (percentage > 50) {
+      color = 'hsl(var(--chart-4))'; // light yellow
+    } else if (percentage > 25) {
+      color = 'hsl(var(--chart-5))'; // reddish deep yellow
+    } else if (percentage > 0) {
+      color = 'hsl(var(--destructive))'; // red
+    }
+
+    return {
+      completed: {
+        label: 'Completed',
+        color,
+      },
+      incomplete: {
+        label: 'Incomplete',
+        color: 'hsl(var(--muted))',
+      },
+    };
+  }, [stats.percentage]);
 
   const chartData = useMemo(() => [
     { name: 'completed', value: stats.completed },
