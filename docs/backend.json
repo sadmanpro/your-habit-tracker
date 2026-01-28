@@ -102,6 +102,52 @@
         "completedAt",
         "duration"
       ]
+    },
+    "WeeklyTask": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Weekly Task",
+      "type": "object",
+      "description": "Represents a task for a specific week.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the weekly task.",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the task (e.g., 'Complete project report')."
+        },
+        "weekStartDate": {
+          "type": "string",
+          "description": "The start date of the week for this task (e.g., '2024-01-22').",
+          "format": "date"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the task was created.",
+          "format": "date-time"
+        },
+        "completions": {
+          "type": "object",
+          "description": "A map of completion dates to a boolean status for the 7 days of the week.",
+          "additionalProperties": {
+            "type": "boolean"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "name",
+        "weekStartDate",
+        "createdAt",
+        "completions"
+      ]
     }
   },
   "auth": {
@@ -164,6 +210,26 @@
             {
               "name": "sessionId",
               "description": "The unique identifier of the session."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/weeklyTasks/{taskId}",
+        "definition": {
+          "entityName": "WeeklyTask",
+          "schema": {
+            "$ref": "#/backend/entities/WeeklyTask"
+          },
+          "description": "Stores weekly tasks for a specific user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "taskId",
+              "description": "The unique identifier of the task."
             }
           ]
         }

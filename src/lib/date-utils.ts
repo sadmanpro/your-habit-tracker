@@ -4,6 +4,8 @@ import {
   startOfMonth,
   format,
   isSameDay,
+  startOfWeek as dfnsStartOfWeek,
+  endOfWeek as dfnsEndOfWeek,
 } from 'date-fns';
 
 export const getDaysInMonth = (date: Date) => {
@@ -34,3 +36,9 @@ export const formatDateKey = (date: Date): string => {
 export const getFormattedDate = (date: Date): string => {
   return format(date, "do MMMM, yyyy");
 };
+
+export const getCalendarWeekDays = (date: Date): Date[] => {
+    const start = dfnsStartOfWeek(date, { weekStartsOn: 1 }); // Monday
+    const end = dfnsEndOfWeek(date, { weekStartsOn: 1 }); // Sunday
+    return eachDayOfInterval({ start, end });
+}

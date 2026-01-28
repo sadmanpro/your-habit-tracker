@@ -33,6 +33,7 @@ import Footer from './footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PomodoroWeeklyChart from './pomodoro-weekly-chart';
 import PomodoroMonthlyChart from './pomodoro-monthly-chart';
+import dynamic from 'next/dynamic';
 
 const defaultHabits: Habit[] = [
   {
@@ -43,6 +44,16 @@ const defaultHabits: Habit[] = [
     createdAt: new Date().toISOString(),
   },
 ];
+
+const WeeklyTasks = dynamic(() => import('@/app/components/weekly-tasks'), {
+  ssr: false,
+  loading: () => (
+    <div className="space-y-6">
+        <Skeleton className="h-64" />
+        <Skeleton className="h-96" />
+    </div>
+  ),
+});
 
 export default function HabitTracker() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -219,9 +230,10 @@ export default function HabitTracker() {
         </header>
 
         <Tabs defaultValue="tracker" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="tracker">Habit Tracker</TabsTrigger>
                 <TabsTrigger value="pomodoro">Pomodoro</TabsTrigger>
+                <TabsTrigger value="weekly-tasks">Weekly Tasks</TabsTrigger>
             </TabsList>
             <TabsContent value="tracker" className="mt-6 space-y-6">
                 <div
@@ -272,6 +284,9 @@ export default function HabitTracker() {
                     <PomodoroWeeklyChart />
                     <PomodoroMonthlyChart />
                 </div>
+            </TabsContent>
+            <TabsContent value="weekly-tasks" className="mt-6 space-y-6">
+                <WeeklyTasks />
             </TabsContent>
         </Tabs>
         
