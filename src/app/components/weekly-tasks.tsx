@@ -192,7 +192,7 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
                     return (
                         <div key={dayKey} className="p-2 rounded-lg bg-muted/50 space-y-2 flex flex-col">
                             <DailyTaskProgressPie tasks={dayTasks} />
-                            <div className="font-semibold text-center">
+                            <div className="font-semibold text-center bg-chart-8/20 rounded-lg py-1">
                                 <p className="text-xs">{format(day, 'EEE')}</p>
                                 <p className="text-xl font-bold">{format(day, 'd')}</p>
                             </div>
