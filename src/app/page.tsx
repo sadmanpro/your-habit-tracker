@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 const HabitTracker = dynamic(() => import('@/app/components/habit-tracker'), {
   ssr: false,
   loading: () => (
-    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <header>
           <Skeleton className="h-9 w-64 mb-2" />

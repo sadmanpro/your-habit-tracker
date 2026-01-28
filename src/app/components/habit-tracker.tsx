@@ -225,7 +225,7 @@ export default function HabitTracker() {
 
   if (loading) {
     return (
-        <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
+        <div className="min-h-screen p-4 sm:p-6 lg:p-8">
             <div className="max-w-7xl mx-auto space-y-6">
                 <header>
                     <Skeleton className="h-9 w-64 mb-2" />
@@ -245,7 +245,7 @@ export default function HabitTracker() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen text-foreground p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <header
           className="animate-in fade-in slide-in-from-top-2 duration-500"
