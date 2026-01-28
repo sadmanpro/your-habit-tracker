@@ -228,7 +228,7 @@ export default function WeeklyTasks({ onAuthRequested }: { onAuthRequested: () =
                                             onCheckedChange={() => handleToggleTask(task)}
                                             className="h-3 w-3 sm:h-4 sm:w-4"
                                         />
-                                        <label htmlFor={`task-${task.id}`} className={`text-xs sm:text-sm font-medium break-all flex-1 ${user ? 'cursor-pointer' : 'cursor-default'}`}>{task.name}</label>
+                                        <label htmlFor={`task-${task.id}`} className={`text-xs sm:text-sm font-medium flex-1 ${user ? 'cursor-pointer' : 'cursor-default'}`}>{task.name}</label>
                                         <DropdownMenu>
                                           <DropdownMenuTrigger asChild>
                                               <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 flex-shrink-0" disabled={!user}>
