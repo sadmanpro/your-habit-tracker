@@ -177,7 +177,7 @@ service cloud.firestore {
        * @allow (create, list, get, update, delete) An authenticated user can manage their own daily tasks.
        */
       match /dailyTasks/{taskId} {
-        allow get, list: if isOwner(userId);
+        allow read: if isOwner(userId);
         allow create: if isOwner(userId) && isValidDailyTaskOnCreate(userId);
         allow update: if isExistingOwner(userId) && isDailyTaskImmutableOnUpdate();
         allow delete: if isExistingOwner(userId);
